@@ -815,6 +815,9 @@ video {
 .h-64 {
   height: 16rem;
 }
+.h-4 {
+  height: 1rem;
+}
 .max-h-0 {
   max-height: 0px;
 }
@@ -856,6 +859,9 @@ video {
 }
 .w-full {
   width: 100%;
+}
+.w-2\/3 {
+  width: 66.666667%;
 }
 .min-w-0 {
   min-width: 0px;
@@ -965,6 +971,15 @@ video {
 }
 .animate-bounce {
   animation: bounce 1s infinite;
+}
+@keyframes pulse {
+
+  50% {
+    opacity: .5;
+  }
+}
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 .cursor-pointer {
   cursor: pointer;
