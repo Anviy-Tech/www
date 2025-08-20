@@ -1,0 +1,870 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --primary: #1a1a1a;
+  --secondary: #f8f7f4;
+  --accent: #c9a96e;
+  --accent-dark: #a68a5c;
+  --surface: #ffffff;
+  --surface-elevated: #fefefe;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-muted: #9ca3af;
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+}
+
+html, body {
+  height: 100%;
+  font-feature-settings: "cv02","cv03","cv04","cv11";
+}
+
+body {
+  background: var(--secondary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container-page {
+  @apply max-w-[1400px] mx-auto px-6 lg:px-8;
+}
+
+/* Sophisticated Card System */
+.card {
+  @apply bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300;
+  border-radius: 2px;
+}
+
+.card-elevated {
+  @apply bg-white shadow-lg border-0;
+  border-radius: 2px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+.card-minimal {
+  @apply bg-white/60 backdrop-blur-sm border border-white/20;
+  border-radius: 1px;
+}
+
+/* Luxury Button System */
+.btn-primary {
+  @apply inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-medium tracking-wide transition-all duration-300 hover:bg-primary/90;
+  border-radius: 0;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center px-8 py-4 border border-primary text-primary font-medium tracking-wide transition-all duration-300 hover:bg-primary hover:text-white;
+  border-radius: 0;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-accent {
+  @apply inline-flex items-center justify-center px-8 py-4 bg-accent text-white font-medium tracking-wide transition-all duration-300 hover:bg-accent-dark;
+  border-radius: 0;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-minimal {
+  @apply inline-flex items-center justify-center px-6 py-3 text-primary font-medium tracking-wide underline decoration-1 underline-offset-4 hover:decoration-2 transition-all duration-300;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* Sophisticated Typography */
+.text-display {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.text-display-large {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: clamp(3rem, 8vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.text-serif {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+.text-small-caps {
+  font-variant: small-caps;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+/* Minimal Layout System */
+.section-hero {
+  min-height: 90vh;
+  @apply flex items-center;
+}
+
+.section-standard {
+  @apply py-24 lg:py-32;
+}
+
+.section-compact {
+  @apply py-16 lg:py-20;
+}
+
+/* Sophisticated Animations */
+.animate-reveal {
+  animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-reveal-delay-1 {
+  animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-reveal-delay-2 {
+  animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-reveal-delay-3 {
+  animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hover-scale {
+  @apply transition-transform duration-700 ease-out hover:scale-105;
+}
+
+.hover-fade {
+  @apply transition-opacity duration-300 hover:opacity-80;
+}
+
+/* Editorial Grid System */
+.grid-editorial {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.grid-masonry {
+  columns: 3;
+  column-gap: 2rem;
+  column-fill: balance;
+}
+
+@media (max-width: 768px) {
+  .grid-masonry {
+    columns: 1;
+  }
+}
+
+/* Luxury Details */
+.divider {
+  width: 60px;
+  height: 1px;
+  background: var(--accent);
+  @apply mx-auto my-8;
+}
+
+.geometric-pattern {
+  background-image: radial-gradient(circle at 2px 2px, var(--accent) 1px, transparent 0);
+  background-size: 40px 40px;
+  opacity: 0.03;
+}
+
+/* Custom Scrollbar */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--border-light);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 0;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-dark);
+}
+
+/* Product Card Enhancements */
+.product-card {
+  @apply cursor-pointer;
+}
+
+.product-image {
+  @apply overflow-hidden relative;
+  aspect-ratio: 1/1;
+}
+
+.product-image img {
+  @apply w-full h-full object-cover transition-transform duration-700 group-hover:scale-105;
+}
+
+.product-overlay {
+  @apply absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500;
+}
+
+/* Text truncation utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Enhanced button animations */
+.btn-primary, .btn-secondary {
+  transform: translateY(0);
+}
+
+.btn-primary:active, .btn-secondary:active {
+  transform: translateY(1px);
+}
+
+/* Stock indicator enhancement */
+.stock-indicator {
+  @apply bg-accent text-white text-xs px-3 py-1 font-medium;
+  backdrop-filter: blur(4px);
+}
+
+/* Rating stars */
+.rating-stars svg {
+  transition: all 0.2s ease;
+}
+
+.rating-stars:hover svg {
+  transform: scale(1.1);
+}
+
+/* Product Gallery Enhancements */
+.gallery-thumbnail {
+  @apply transition-all duration-300;
+}
+
+.gallery-thumbnail:hover {
+  @apply ring-2 ring-accent/50;
+}
+
+.gallery-thumbnail.active {
+  @apply ring-2 ring-accent;
+}
+
+/* Quantity Input */
+.quantity-input {
+  @apply flex items-center border border-border;
+}
+
+.quantity-input button {
+  @apply px-4 py-3 hover:bg-gray-50 transition-colors duration-200;
+}
+
+.quantity-input button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Size Selection */
+.size-option {
+  @apply py-3 text-sm font-medium border transition-all duration-300 text-center cursor-pointer;
+}
+
+.size-option:hover {
+  @apply border-primary;
+}
+
+.size-option.selected {
+  @apply border-primary bg-primary text-white;
+}
+
+.size-option.unavailable {
+  @apply opacity-50 cursor-not-allowed line-through;
+}
+
+/* Review Rating Bars */
+.rating-bar {
+  @apply flex-1 bg-gray-200 rounded-full h-2 overflow-hidden;
+}
+
+.rating-bar-fill {
+  @apply bg-accent h-full transition-all duration-500 ease-out;
+}
+
+/* Product Features Icons */
+.feature-icon {
+  @apply w-5 h-5 text-accent;
+}
+
+/* Breadcrumb styling */
+.breadcrumb {
+  @apply text-sm text-text-muted;
+}
+
+.breadcrumb a:hover {
+  @apply text-text-primary transition-colors duration-200;
+}
+
+/* Enhanced hover effects for thumbnails */
+.thumbnail-overlay {
+  @apply absolute inset-0 transition-opacity duration-300;
+}
+
+.thumbnail-overlay.inactive {
+  @apply bg-white/30;
+}
+
+.thumbnail-overlay.active {
+  @apply bg-transparent;
+}
+
+/* Zoom cursor styles */
+.zoom-in {
+  cursor: zoom-in;
+}
+
+.zoom-out {
+  cursor: zoom-out;
+}
+
+/* Review helpful button */
+.review-action {
+  @apply flex items-center space-x-2 text-text-muted hover:text-text-secondary transition-colors duration-200 text-sm;
+}
+
+/* Price comparison */
+.price-comparison {
+  @apply flex items-center space-x-4;
+}
+
+.price-current {
+  @apply text-3xl font-medium text-accent;
+}
+
+.price-original {
+  @apply text-sm text-text-muted line-through;
+}
+
+.price-discount {
+  @apply bg-accent text-white text-xs px-2 py-1 font-medium uppercase tracking-wide;
+}
+
+/* Cart Page Enhancements */
+.cart-item {
+  @apply bg-white transition-all duration-300 hover:shadow-lg;
+}
+
+.cart-item-image {
+  @apply w-full aspect-square object-cover transition-transform duration-300 hover:scale-105;
+}
+
+.quantity-control {
+  @apply flex items-center border border-border;
+}
+
+.quantity-control button {
+  @apply px-4 py-3 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.quantity-control input {
+  @apply text-center border-0 focus:outline-none min-w-[60px] py-3;
+}
+
+/* Order Summary */
+.order-summary {
+  @apply bg-white sticky top-24;
+}
+
+.promo-input {
+  @apply flex-1 px-4 py-3 border border-border focus:outline-none focus:border-accent transition-colors duration-300;
+}
+
+.promo-success {
+  @apply text-sm text-green-600 bg-green-50 px-3 py-2 rounded;
+}
+
+.shipping-option {
+  @apply flex items-center space-x-3 cursor-pointer p-3 border border-transparent hover:border-border rounded transition-all duration-200;
+}
+
+.shipping-option.selected {
+  @apply border-accent bg-accent/5;
+}
+
+.shipping-option input[type="radio"] {
+  @apply w-4 h-4 text-accent border-border focus:ring-accent;
+}
+
+/* Price breakdown styling */
+.price-row {
+  @apply flex justify-between py-2 text-text-secondary;
+}
+
+.price-row.total {
+  @apply text-xl font-medium text-text-primary border-t border-border-light pt-4 mt-4;
+}
+
+.price-row.discount {
+  @apply text-green-600;
+}
+
+/* Security badges */
+.security-badge {
+  @apply flex items-center space-x-3 text-sm text-text-secondary;
+}
+
+.security-icon {
+  @apply w-4 h-4 text-accent;
+}
+
+/* Empty cart styling */
+.empty-cart {
+  @apply min-h-screen bg-secondary flex items-center justify-center;
+}
+
+.empty-cart-icon {
+  @apply w-32 h-32 mx-auto mb-8 opacity-30 text-accent;
+}
+
+/* Cart actions */
+.cart-action {
+  @apply flex items-center space-x-2 text-text-muted hover:text-accent transition-colors duration-200 text-sm;
+}
+
+.cart-action.danger:hover {
+  @apply text-red-500;
+}
+
+.cart-action svg {
+  @apply w-4 h-4;
+}
+
+/* About Page Enhancements */
+.about-hero {
+  @apply min-h-screen flex items-center relative overflow-hidden;
+}
+
+.about-section {
+  @apply py-24 lg:py-32;
+}
+
+.process-step {
+  @apply text-center transition-all duration-300 hover:transform hover:-translate-y-2;
+}
+
+.process-icon {
+  @apply text-4xl mb-6 transition-transform duration-300;
+}
+
+.process-step:hover .process-icon {
+  @apply scale-110;
+}
+
+.team-member {
+  @apply text-center transition-all duration-300 hover:transform hover:-translate-y-2;
+}
+
+.team-avatar {
+  @apply w-48 h-48 object-cover mx-auto rounded-full transition-all duration-300;
+}
+
+.team-member:hover .team-avatar {
+  @apply scale-105 shadow-xl;
+}
+
+.materials-card {
+  @apply bg-white p-8 transition-all duration-300 hover:shadow-lg hover:transform hover:-translate-y-1;
+}
+
+.feature-checkmark {
+  @apply w-4 h-4 mr-3 text-accent;
+}
+
+.values-section {
+  @apply space-y-8;
+}
+
+.value-item {
+  @apply transition-all duration-300 hover:transform hover:translate-x-2;
+}
+
+/* Brand story typography */
+.brand-story {
+  @apply space-y-8 text-lg text-text-secondary leading-relaxed;
+}
+
+.brand-story p {
+  @apply transition-opacity duration-300 hover:opacity-90;
+}
+
+/* Process timeline */
+.process-timeline {
+  @apply relative;
+}
+
+.process-timeline::before {
+  content: '';
+  @apply absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-full bg-border-light hidden lg:block;
+}
+
+/* Call to action section */
+.cta-section {
+  @apply bg-primary text-white relative overflow-hidden;
+}
+
+.cta-content {
+  @apply text-center relative z-10;
+}
+
+/* Geometric pattern overlay */
+.geometric-overlay {
+  @apply absolute inset-0 opacity-5;
+  background-image: radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Hero Carousel Animations */
+.hero-slide {
+  @apply transition-all duration-1000 ease-in-out;
+}
+
+.hero-content {
+  @apply transform transition-all duration-1000;
+}
+
+.slide-enter {
+  @apply opacity-0 scale-105;
+}
+
+.slide-enter-active {
+  @apply opacity-100 scale-100;
+}
+
+.slide-exit {
+  @apply opacity-100 scale-100;
+}
+
+.slide-exit-active {
+  @apply opacity-0 scale-105;
+}
+
+/* Text Reveal Animations */
+.text-reveal {
+  overflow: hidden;
+}
+
+.text-reveal-content {
+  @apply transform transition-all duration-1000 ease-out;
+}
+
+.text-reveal-enter {
+  @apply translate-y-full opacity-0;
+}
+
+.text-reveal-enter-active {
+  @apply translate-y-0 opacity-100;
+}
+
+/* Moving Text Banner Animations */
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Floating Elements */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(-180deg);
+  }
+}
+
+@keyframes float-fast {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(360deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 4s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 3s ease-in-out infinite;
+}
+
+/* Slide Indicators */
+.slide-indicator {
+  @apply w-3 h-3 rounded-full transition-all duration-300 cursor-pointer;
+}
+
+.slide-indicator.active {
+  @apply w-8 bg-white;
+}
+
+.slide-indicator.inactive {
+  @apply bg-white/50 hover:bg-white/70;
+}
+
+/* Progress Bar */
+.slide-progress {
+  @apply h-1 bg-white transition-all duration-300 ease-linear;
+}
+
+/* Hero Navigation */
+.hero-nav-button {
+  @apply w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 border-2 border-white/20 hover:border-white/40;
+}
+
+.hero-nav-button:hover {
+  @apply scale-110;
+}
+
+/* Banner Message Animations */
+.banner-message {
+  @apply absolute inset-0 flex items-center justify-center transition-all duration-1000 transform;
+}
+
+.banner-message.current {
+  @apply translate-y-0 opacity-100;
+}
+
+.banner-message.prev {
+  @apply -translate-y-full opacity-0;
+}
+
+.banner-message.next {
+  @apply translate-y-full opacity-0;
+}
+
+/* Enhanced Reveal Animations */
+.reveal-text {
+  @apply transform transition-all duration-1000 ease-out;
+}
+
+.reveal-text.delay-1 {
+  transition-delay: 100ms;
+}
+
+.reveal-text.delay-2 {
+  transition-delay: 200ms;
+}
+
+.reveal-text.delay-3 {
+  transition-delay: 300ms;
+}
+
+.reveal-text.delay-4 {
+  transition-delay: 400ms;
+}
+
+/* Backdrop Effects */
+.hero-backdrop {
+  @apply backdrop-blur-sm bg-black/20;
+}
+
+.glass-card {
+  @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl;
+}
+
+/* Modern FAQ Styling */
+.faq-item {
+  @apply bg-secondary/30 hover:bg-white hover:shadow-lg transition-all duration-500;
+}
+
+.faq-icon {
+  @apply flex-shrink-0 w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center text-2xl group-hover:bg-accent/20 transition-colors duration-300;
+}
+
+.faq-toggle {
+  @apply w-8 h-8 rounded-full border-2 border-accent flex items-center justify-center text-accent font-bold text-sm transition-all duration-300 group-hover:bg-accent group-hover:text-white;
+}
+
+.faq-toggle.open {
+  @apply rotate-45 bg-accent text-white;
+}
+
+.faq-question {
+  @apply text-display text-lg leading-tight text-text-primary group-hover:text-accent transition-colors duration-300;
+}
+
+.faq-content {
+  @apply transition-all duration-500 ease-in-out overflow-hidden;
+}
+
+.faq-content.open {
+  @apply max-h-96 opacity-100;
+}
+
+.faq-content.closed {
+  @apply max-h-0 opacity-0;
+}
+
+/* Category Filter */
+.category-filter {
+  @apply px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300;
+}
+
+.category-filter.active {
+  @apply bg-primary text-white;
+}
+
+.category-filter.inactive {
+  @apply border border-border hover:border-primary hover:text-primary;
+}
+
+/* Contact Section */
+.contact-card {
+  @apply bg-gradient-to-br from-accent/5 to-accent/10 transition-all duration-300 hover:from-accent/10 hover:to-accent/15;
+}
+
+.help-item {
+  @apply text-center transition-all duration-300 hover:transform hover:-translate-y-1;
+}
+
+.help-icon {
+  @apply text-3xl mb-4 transition-transform duration-300;
+}
+
+.help-item:hover .help-icon {
+  @apply scale-110;
+}
+
+/* FAQ Grid Layout */
+.faq-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-8;
+}
+
+.faq-card {
+  @apply relative overflow-hidden transition-all duration-500;
+}
+
+.faq-card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/5 opacity-0 transition-opacity duration-300;
+}
+
+.faq-card:hover::before {
+  @apply opacity-100;
+}
+
+/* Enhanced hover effects */
+.faq-item:hover {
+  @apply shadow-xl transform -translate-y-1;
+}
+
+.faq-category-tag {
+  @apply text-small-caps text-xs text-text-muted tracking-widest transition-colors duration-300 group-hover:text-accent;
+}
+
+/* Smooth expand/collapse */
+.faq-answer {
+  @apply text-text-secondary leading-relaxed transition-all duration-300;
+}
+
+.faq-answer-wrapper {
+  @apply transition-all duration-500 ease-in-out;
+}
+
+/* Loading states */
+.faq-loading {
+  @apply animate-pulse bg-gray-200;
+}
+
+/* Focus states for accessibility */
+.faq-button:focus {
+  @apply outline-none ring-2 ring-accent/20;
+}
+
+.category-button:focus {
+  @apply outline-none ring-2 ring-primary/20;
+}
+
+/* Navigation Enhancements */
+.nav-minimal {
+  @apply backdrop-blur-md bg-white/80 border-b border-border-light;
+}
+
+.nav-link {
+  @apply text-sm font-medium text-text-secondary hover:text-primary transition-colors duration-300;
+  letter-spacing: 0.5px;
+}
+
+/* Form Styling */
+.input-minimal {
+  @apply w-full px-0 py-3 border-0 border-b border-border bg-transparent focus:border-primary focus:outline-none transition-colors duration-300;
+  border-radius: 0;
+}
+
+.input-minimal::placeholder {
+  @apply text-text-muted;
+  font-size: 14px;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .text-display-large {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+  }
+}
+
+

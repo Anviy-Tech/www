@@ -1,0 +1,145 @@
+export type Product = {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  tags: string[];
+  stock: number;
+};
+
+export const products: Product[] = [
+  {
+    id: 'ring-aurora',
+    slug: 'aurora-ring',
+    name: 'Aurora Ring',
+    price: 2999,
+    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&h=800&fit=crop',
+    description: '18k vermeil on sterling silver with prong-set stones.',
+    tags: ['ring', 'vermeil'],
+    stock: 34,
+  },
+  {
+    id: 'bracelet-slim',
+    slug: 'slim-bracelet',
+    name: 'Slim Bracelet',
+    price: 3499,
+    image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800&h=800&fit=crop',
+    description: 'Minimal bangle in polished vermeil.',
+    tags: ['bracelet'],
+    stock: 22,
+  },
+  {
+    id: 'hoops-mini',
+    slug: 'mini-hoops',
+    name: 'Mini Hoops',
+    price: 1999,
+    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&h=800&fit=crop',
+    description: 'Everyday hoops with secure latch closures.',
+    tags: ['earrings'],
+    stock: 51,
+  },
+  {
+    id: 'necklace-pearl',
+    slug: 'pearl-drop-necklace',
+    name: 'Pearl Drop Necklace',
+    price: 3899,
+    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&h=800&fit=crop',
+    description: 'Freshwater pearl pendant on slim chain.',
+    tags: ['necklace'],
+    stock: 11,
+  },
+  {
+    id: 'ring-stack',
+    slug: 'stack-ring-set',
+    name: 'Stack Ring Set',
+    price: 4599,
+    image: 'https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?w=800&h=800&fit=crop',
+    description: 'Three-piece stack in contrasting finishes.',
+    tags: ['ring'],
+    stock: 15,
+  },
+  {
+    id: 'bracelet-chain',
+    slug: 'paperclip-chain-bracelet',
+    name: 'Paperclip Chain Bracelet',
+    price: 2799,
+    image: 'https://images.unsplash.com/photo-1603575449299-0f2f5d6c2c88?w=800&h=800&fit=crop',
+    description: 'Modern link silhouette with secure clasp.',
+    tags: ['bracelet'],
+    stock: 40,
+  },
+  {
+    id: 'earrings-studs',
+    slug: 'diamond-studs',
+    name: 'Brilliant Studs',
+    price: 3299,
+    image: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800&h=800&fit=crop',
+    description: 'Lab-grown diamond simulants, bezel set.',
+    tags: ['earrings'],
+    stock: 27,
+  },
+  {
+    id: 'necklace-heart',
+    slug: 'heart-pendant',
+    name: 'Heart Pendant',
+    price: 2599,
+    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=800&fit=crop',
+    description: 'Polished heart charm on adjustable chain.',
+    tags: ['necklace'],
+    stock: 18,
+  },
+  {
+    id: 'mangalsutra-elegance',
+    slug: 'elegance-mangalsutra',
+    name: 'Elegance Mangalsutra',
+    price: 5499,
+    image: 'https://images.unsplash.com/photo-1506629905607-683b94ba4833?w=800&h=800&fit=crop',
+    description: 'Traditional mangalsutra with a modern minimal pendant.',
+    tags: ['mangalsutra', 'luxe'],
+    stock: 12,
+  },
+  {
+    id: 'mens-chain',
+    slug: 'mens-gold-chain',
+    name: "Men's Gold-Tone Chain",
+    price: 5999,
+    image: 'https://images.unsplash.com/photo-1611123029321-9b004d6ac613?w=800&h=800&fit=crop',
+    description: 'Bold chain with polished links for everyday style.',
+    tags: ['mens', 'bracelet'],
+    stock: 20,
+  },
+  {
+    id: 'bracelet-tennis',
+    slug: 'tennis-bracelet',
+    name: 'Tennis Bracelet',
+    price: 7999,
+    image: 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&h=800&fit=crop',
+    description: 'Sparkling line bracelet in lab stones and vermeil.',
+    tags: ['bracelet', 'luxe'],
+    stock: 9,
+  },
+  {
+    id: 'earrings-huggies',
+    slug: 'crystal-huggies',
+    name: 'Crystal Huggies',
+    price: 2499,
+    image: 'https://images.unsplash.com/photo-1551135049-8a33b5883815?w=800&h=800&fit=crop',
+    description: 'Slim huggie hoops with pave crystals.',
+    tags: ['earrings'],
+    stock: 33,
+  },
+  {
+    id: 'ring-solitaire',
+    slug: 'solitaire-ring',
+    name: 'Solitaire Ring',
+    price: 6999,
+    image: 'https://images.unsplash.com/photo-1543294000-b57d4f3d6f22?w=800&h=800&fit=crop',
+    description: 'Classic solitaire set in four-prong basket.',
+    tags: ['ring', 'luxe'],
+    stock: 10,
+  },
+];
+
+
