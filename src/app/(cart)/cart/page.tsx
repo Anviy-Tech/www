@@ -98,13 +98,99 @@ export default function CartPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-12 xl:gap-16">
           {/* Cart Items */}
           <div className="xl:col-span-8">
-            <div className="space-y-6">
+            <div className="space-y-4 lg:space-y-6">
               {items.map((item, index) => (
-                <div key={item.id} className="bg-white p-8 animate-reveal" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div key={item.id} className="bg-white p-4 lg:p-8 animate-reveal" style={{ animationDelay: `${index * 0.1}s` }}>
+                  {/* Mobile Layout */}
+                  <div className="block md:hidden space-y-4">
+                    <div className="flex space-x-4">
+                      <Link href={`/product/${item.slug}`} className="flex-shrink-0">
+                        <Image 
+                          src={item.image} 
+                          alt={item.name} 
+                          width={100} 
+                          height={100} 
+                          className="w-24 h-24 object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </Link>
+                      <div className="flex-1 space-y-3">
+                        <div>
+                          <Link 
+                            href={`/product/${item.slug}`}
+                            className="text-display text-lg hover:text-accent transition-colors duration-300 block"
+                          >
+                            {item.name}
+                          </Link>
+                          <div className="text-small-caps text-xs text-text-muted mt-1 tracking-widest">
+                            18K GOLD VERMEIL
+                          </div>
+                        </div>
+                        <div className="text-lg font-medium text-accent">
+                          ₹{item.price.toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Mobile Quantity Controls */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center border border-border rounded">
+                        <button
+                          onClick={() => setQty(item.id, Math.max(1, item.qty - 1))}
+                          className="px-3 py-2 hover:bg-gray-50 transition-colors touch-manipulation"
+                          aria-label="Decrease quantity"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M5 12h14"/>
+                          </svg>
+                        </button>
+                        <span className="px-4 py-2 min-w-[50px] text-center font-medium">
+                          {item.qty}
+                        </span>
+                        <button
+                          onClick={() => setQty(item.id, item.qty + 1)}
+                          className="px-3 py-2 hover:bg-gray-50 transition-colors touch-manipulation"
+                          aria-label="Increase quantity"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      <div className="text-lg font-medium">
+                        ₹{(item.price * item.qty).toLocaleString()}
+                      </div>
+                    </div>
+                    
+                    {/* Mobile Actions */}
+                    <div className="flex items-center justify-between pt-2 border-t border-border-light">
+                      <button 
+                        onClick={() => handleMoveToFavorites(item)}
+                        className="flex items-center space-x-2 text-sm text-text-muted hover:text-accent transition-colors touch-manipulation"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span>Save</span>
+                      </button>
+                      
+                      <button 
+                        onClick={() => remove(item.id)}
+                        className="flex items-center space-x-2 text-sm text-text-muted hover:text-red-500 transition-colors touch-manipulation"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6M14 11v6"/>
+                        </svg>
+                        <span>Remove</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Desktop Layout */}
+                  <div className="hidden md:grid md:grid-cols-12 gap-6 items-center">
                     {/* Product Image */}
                     <div className="md:col-span-3">
                       <Link href={`/product/${item.slug}`}>
@@ -221,7 +307,7 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="xl:col-span-4">
-            <div className="bg-white p-8 space-y-8 sticky top-24">
+            <div className="bg-white p-4 lg:p-8 space-y-6 lg:space-y-8 lg:sticky lg:top-24">
               <h2 className="text-display text-2xl">Order Summary</h2>
               
               {/* Promo Code */}
@@ -229,7 +315,7 @@ export default function CartPage() {
                 <div className="text-small-caps text-xs text-text-muted tracking-widest">
                   PROMO CODE
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                   <input
                     type="text"
                     placeholder="Enter code"
@@ -239,7 +325,7 @@ export default function CartPage() {
                   />
                   <button
                     onClick={handleApplyPromo}
-                    className="btn-secondary px-6"
+                    className="btn-secondary px-6 w-full sm:w-auto"
                   >
                     Apply
                   </button>
@@ -327,14 +413,14 @@ export default function CartPage() {
 
               {/* Checkout Actions */}
               <div className="space-y-4">
-                <button className="btn-primary w-full py-4 text-lg">
+                <button className="btn-primary w-full py-4 text-lg touch-manipulation">
                   Proceed to Checkout
                 </button>
                 
                 <div className="text-center">
                   <button 
                     onClick={clear}
-                    className="text-sm text-text-muted hover:text-red-500 transition-colors"
+                    className="text-sm text-text-muted hover:text-red-500 transition-colors touch-manipulation"
                   >
                     Clear Cart
                   </button>

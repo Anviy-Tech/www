@@ -3,12 +3,28 @@ import Link from 'next/link';
 import { products } from '@/data/products';
 import { useSearchParams } from 'next/navigation';
 import ProductCard from '../components/ProductCard';
+import Pagination from '../components/Pagination';
+import { usePagination } from '../hooks/usePagination';
 
 export default function ShopContent() {
   const searchParams = useSearchParams();
   const tag = searchParams.get('tag');
   const filtered = tag ? products.filter(p => p.tags.includes(tag)) : products;
   const categories = ['all','necklace','earrings','bracelet','ring','mens','mangalsutra'];
+  
+  const PRODUCTS_PER_PAGE = 12;
+  const {
+    currentPage,
+    totalPages,
+    currentItems: currentProducts,
+    goToPage
+  } = usePagination({
+    items: filtered,
+    itemsPerPage: PRODUCTS_PER_PAGE,
+    initialPage: 1,
+    scrollToTop: true,
+    scrollTargetId: 'shop-products-grid'
+  });
   
   return (
     <div className="container-page section-standard">
@@ -45,17 +61,24 @@ export default function ShopContent() {
       
       {/* Results Count */}
       <div className="mb-8">
-        <p className="text-text-secondary">
-          Showing {filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'}
-          {tag && (
-            <span className="text-accent"> in {tag}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-text-secondary mb-2 sm:mb-0">
+            Showing {((currentPage - 1) * PRODUCTS_PER_PAGE) + 1}-{Math.min(currentPage * PRODUCTS_PER_PAGE, filtered.length)} of {filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'}
+            {tag && (
+              <span className="text-accent"> in {tag}</span>
+            )}
+          </p>
+          {totalPages > 1 && (
+            <div className="text-sm text-text-muted">
+              Page {currentPage} of {totalPages}
+            </div>
           )}
-        </p>
+        </div>
       </div>
       
       {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-12">
-        {filtered.map((product, i) => (
+      <div id="shop-products-grid" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
+        {currentProducts.map((product, i) => (
           <ProductCard 
             key={product.id}
             product={product}
@@ -63,6 +86,18 @@ export default function ShopContent() {
           />
         ))}
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-16">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+            className=""
+          />
+        </div>
+      )}
       
       {/* No Results */}
       {filtered.length === 0 && (

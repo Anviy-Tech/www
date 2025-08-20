@@ -1,3 +1,4 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { products } from '@/data/products';
@@ -5,8 +6,24 @@ import FAQSection from './components/FAQSection';
 import ProductCard from './components/ProductCard';
 import HeroCarousel from './components/HeroCarousel';
 import MovingTextBanner from './components/MovingTextBanner';
+import Pagination from './components/Pagination';
+import { usePagination } from './hooks/usePagination';
 
 export default function HomePage() {
+  const PRODUCTS_PER_PAGE = 8;
+  const {
+    currentPage,
+    totalPages,
+    currentItems: currentProducts,
+    goToPage
+  } = usePagination({
+    items: products,
+    itemsPerPage: PRODUCTS_PER_PAGE,
+    initialPage: 1,
+    scrollToTop: true,
+    scrollTargetId: 'products-section'
+  });
+
   return (
     <main>
       {/* Modern Hero Carousel */}
@@ -37,27 +54,44 @@ export default function HomePage() {
       </section>
 
       {/* Editorial Product Grid */}
-      <section className="section-standard">
+      <section id="products-section" className="section-standard">
         <div className="container-page">
           <div className="animate-reveal mb-16">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-display text-3xl">Curated Selection</h2>
               <Link href="/shop" className="btn-minimal">View All Pieces</Link>
             </div>
-            <div className="text-small-caps text-xs text-gray-500 tracking-widest">
-              HANDPICKED BY OUR ARTISANS
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-small-caps text-xs text-gray-500 tracking-widest mb-2 sm:mb-0">
+                HANDPICKED BY OUR ARTISANS
+              </div>
+              <div className="text-sm text-text-secondary">
+                Showing {((currentPage - 1) * PRODUCTS_PER_PAGE) + 1}-{Math.min(currentPage * PRODUCTS_PER_PAGE, products.length)} of {products.length} pieces
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {products.slice(0, 6).map((product, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
+            {currentProducts.map((product, i) => (
               <ProductCard 
                 key={product.id}
                 product={product}
-                className={`animate-reveal-delay-${Math.min(i, 3)}`}
+                className={`animate-reveal-delay-${Math.min(i % 4, 3)}`}
               />
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-16">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+                className=""
+              />
+            </div>
+          )}
         </div>
       </section>
 
