@@ -1,7 +1,8 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/(cart)/cart/page": "app/(cart)/cart/page.js",
   "/(shop)/page": "app/(shop)/page.js",
-  "/(shop)/product/[slug]/page": "app/(shop)/product/[slug]/page.js",
   "/(shop)/favorites/page": "app/(shop)/favorites/page.js",
+  "/(shop)/shop/page": "app/(shop)/shop/page.js",
   "/(shop)/about/page": "app/(shop)/about/page.js"
 }

@@ -90,14 +90,6 @@ export default function MovingTextBanner() {
           ))}
         </div>
       </div>
-
-      {/* Floating Elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="animate-float-slow absolute top-2 left-10 text-accent/30">✨</div>
-        <div className="animate-float-medium absolute top-1 right-20 text-accent/30">💎</div>
-        <div className="animate-float-fast absolute top-3 left-1/2 text-accent/30">⭐</div>
-        <div className="animate-float-slow absolute top-2 right-10 text-accent/30">💫</div>
-      </div>
     </div>
   );
 }
