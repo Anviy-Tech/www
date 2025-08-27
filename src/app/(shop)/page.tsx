@@ -8,6 +8,14 @@ import HeroCarousel from './components/HeroCarousel';
 import MovingTextBanner from './components/MovingTextBanner';
 import Pagination from './components/Pagination';
 import { usePagination } from './hooks/usePagination';
+import FeaturedCollections from './components/FeaturedCollections';
+import CustomerTestimonials from './components/CustomerTestimonials';
+import InstagramFeed from './components/InstagramFeed';
+import SustainabilitySection from './components/SustainabilitySection';
+import GiftFinder from './components/GiftFinder';
+import VideoShowcase from './components/VideoShowcase';
+import OurStory from './components/OurStory';
+import EveryPieceStory from './components/EveryPieceStory';
 
 export default function HomePage() {
   const PRODUCTS_PER_PAGE = 8;
@@ -32,26 +40,17 @@ export default function HomePage() {
       {/* Moving Text Banner */}
       <MovingTextBanner />
 
-      {/* Philosophy Section */}
-      <section className="section-standard bg-white">
-        <div className="container-page">
-          <div className="grid-editorial">
-            <div className="col-span-12 lg:col-span-8 lg:col-start-3 text-center">
-              <div className="animate-reveal">
-                <h2 className="text-display text-4xl lg:text-5xl mb-8">
-                  Where <span className="text-serif">artistry</span> meets precision
-                </h2>
-                <div className="divider"></div>
-                <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
-                  Our atelier combines traditional craftsmanship with contemporary design philosophy. 
-                  Each piece undergoes meticulous selection of materials and rigorous quality control 
-                  to ensure lasting beauty and comfort.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Our Story Section */}
+      <OurStory />
+
+      {/* Featured Collections Section */}
+      <FeaturedCollections />
+
+      {/* Video Showcase Section */}
+      <VideoShowcase />
+
+      {/* Every Piece Tells a Story Section */}
+      <EveryPieceStory />
 
       {/* Editorial Product Grid */}
       <section id="products-section" className="section-standard">
@@ -95,6 +94,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Gift Finder Section */}
+      <GiftFinder />
+
       {/* Craftsmanship Section */}
       <section className="section-standard bg-gray-50">
         <div className="container-page">
@@ -136,6 +138,15 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Customer Testimonials Section */}
+      <CustomerTestimonials />
+
+      {/* Sustainability Section */}
+      <SustainabilitySection />
+
+      {/* Instagram Feed Section */}
+      <InstagramFeed />
 
       {/* Newsletter Section */}
       <section className="section-compact bg-primary text-white">

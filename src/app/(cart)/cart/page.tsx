@@ -413,9 +413,9 @@ export default function CartPage() {
 
               {/* Checkout Actions */}
               <div className="space-y-4">
-                <button className="btn-primary w-full py-4 text-lg touch-manipulation">
+                <Link href="/checkout" className="btn-primary w-full py-4 text-lg touch-manipulation text-center block">
                   Proceed to Checkout
-                </button>
+                </Link>
                 
                 <div className="text-center">
                   <button 

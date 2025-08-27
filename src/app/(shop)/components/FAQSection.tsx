@@ -12,59 +12,101 @@ interface FAQ {
 const faqs: FAQ[] = [
   {
     id: 1,
-    category: "Materials",
-    question: "What materials do you use? Is it real gold or just plated?",
-    answer: "We use premium 18k gold vermeil over sterling silver base. This means a thick layer of real 18k gold is electroplated onto high-quality sterling silver, ensuring durability and lasting shine. All our pieces are hypoallergenic and skin-safe.",
+    category: "Materials & Quality",
+    question: "What is your jewellery made of?",
+    answer: "Our jewellery is crafted from high-quality 316L stainless steel with premium 18K gold plating. Each piece is hypoallergenic, tarnish-resistant, waterproof, and designed for everyday wear. We use only the finest materials to ensure lasting beauty and comfort.",
     icon: "💎"
   },
   {
     id: 2,
-    category: "Quality",
-    question: "Is your jewellery hallmarked or certified?",
-    answer: "Yes, all our gold vermeil pieces meet international quality standards. We provide authenticity certificates with each purchase, and our lab-grown diamonds come with certification for quality assurance.",
-    icon: "🏆"
-  },
-  {
-    id: 3,
-    category: "Pricing",
-    question: "Why is this more expensive than regular fashion jewellery?",
-    answer: "Our demi-fine jewellery uses premium materials like real 18k gold vermeil and lab-grown diamonds. Unlike fashion jewellery that tarnishes quickly, our pieces are designed to last for years with proper care. You're investing in quality, durability, and ethical sourcing.",
-    icon: "💰"
-  },
-  {
-    id: 4,
-    category: "Care",
-    question: "Will it tarnish or fade over time?",
-    answer: "With proper care, our 18k gold vermeil jewellery maintains its shine for years. We recommend keeping pieces dry, storing them separately, and cleaning gently with a soft cloth. We also offer a lifetime warranty against manufacturing defects.",
-    icon: "✨"
-  },
-  {
-    id: 5,
-    category: "Policy",
-    question: "What if something goes wrong — do you offer warranty or returns?",
-    answer: "We offer a 30-day return policy for unused items in original packaging, plus a lifetime warranty against manufacturing defects. If you're not completely satisfied, we'll make it right with free exchanges or full refunds.",
+    category: "Materials & Quality",
+    question: "Is your jewellery hypoallergenic?",
+    answer: "Yes, all of our jewellery is hypoallergenic and safe for sensitive skin. Our pieces are crafted with materials that prevent irritation, making them comfortable to wear all day long. We use nickel-free materials to ensure maximum skin compatibility.",
     icon: "🛡️"
   },
   {
+    id: 3,
+    category: "Care & Maintenance",
+    question: "Does the gold plating tarnish or fade?",
+    answer: "Our jewellery is designed to be anti-tarnish and long-lasting. With proper care, the 18K gold plating will maintain its shine for a long time, even with regular wear. We recommend storing pieces in a cool, dry place and cleaning them gently with a soft cloth.",
+    icon: "✨"
+  },
+  {
+    id: 4,
+    category: "Care & Maintenance",
+    question: "Can I wear your jewellery in water?",
+    answer: "Yes! Our jewellery is waterproof, so you can wear it while showering, swimming, or washing your hands without worrying about damage. However, we recommend avoiding exposure to harsh chemicals like chlorine or perfumes to prolong its shine.",
+    icon: "💧"
+  },
+  {
+    id: 5,
+    category: "Care & Maintenance",
+    question: "How do I care for my jewellery?",
+    answer: "To ensure your jewellery stays in the best condition, we recommend occasionally wiping it with a soft cloth to remove any dirt or oils. Store pieces separately to prevent scratching, and avoid exposure to harsh chemicals. While it is waterproof, proper care will extend its lifespan significantly.",
+    icon: "🧽"
+  },
+  {
     id: 6,
-    category: "Usage",
-    question: "Is this jewellery meant for daily wear or special occasions?",
-    answer: "Our pieces are specifically designed for everyday wear! The demi-fine quality means they're durable enough for daily use while being elegant enough for special occasions. Each design strikes the perfect balance between casual and dressy.",
-    icon: "⭐"
+    category: "Shipping & Delivery",
+    question: "Do you offer international shipping?",
+    answer: "Yes, we offer international shipping to most countries. Shipping fees and delivery times vary depending on your location. Check our shipping policy for detailed information on delivery estimates and any applicable customs duties.",
+    icon: "🌍"
   },
   {
     id: 7,
-    category: "Customization",
-    question: "Can I customise or resize a piece?",
-    answer: "We offer resizing services for rings and custom engraving on select pieces. Contact our customer service team with your specific requirements, and we'll let you know what's possible. Custom orders typically take 2-3 weeks.",
-    icon: "🎨"
+    category: "Shipping & Delivery",
+    question: "How long does shipping take?",
+    answer: "For domestic orders, shipping usually takes 3-7 business days. International shipping times may vary depending on your country, but typically takes 7-14 business days. We also offer express shipping options for customers in major cities.",
+    icon: "📦"
   },
   {
     id: 8,
-    category: "Trust",
-    question: "How do I know I can trust the quality if I'm buying online?",
-    answer: "We provide detailed product photos, 360° views, authentic customer reviews, and certificates of authenticity. Plus, our 30-day return policy means you can examine your piece risk-free. We also have physical stores for in-person consultations.",
-    icon: "🔍"
+    category: "Shipping & Delivery",
+    question: "Can I track my order?",
+    answer: "Yes! Once your order has been shipped, you'll receive a tracking number via email, allowing you to monitor your package's delivery status in real-time. You can also track your order through your account dashboard.",
+    icon: "📍"
+  },
+  {
+    id: 9,
+    category: "Returns & Warranty",
+    question: "What is your return policy?",
+    answer: "Returns are only accepted in the event that you receive a product that was damaged during transit. To initiate a return, you must provide substantiated evidence in the form of an unboxing video of the damaged product with the shipping label clearly visible. This helps us ensure the authenticity of your claim and aids in our investigation process. You must raise a dispute within 24 hours of receiving the product.",
+    icon: "🔄"
+  },
+  {
+    id: 10,
+    category: "Returns & Warranty",
+    question: "Do you offer warranty?",
+    answer: "Yes, we offer a 1-year warranty that guarantees shine & luster for a year—quality you can trust! This covers manufacturing defects and ensures your jewellery maintains its beauty with proper care.",
+    icon: "🏆"
+  },
+  {
+    id: 11,
+    category: "Customer Support",
+    question: "How can I contact customer support?",
+    answer: "If you have any questions or need assistance, please reach out to our customer support team via WhatsApp chat support at +91 98193 99178 or email us at info@anviyjewellery.com. We're happy to help and typically respond within 2-4 hours during business days.",
+    icon: "💬"
+  },
+  {
+    id: 12,
+    category: "Promotions & Offers",
+    question: "Do you offer discounts or promotions?",
+    answer: "Yes! Sign up for our newsletter to stay updated on exclusive discounts, promotions, and new arrivals. You can also follow us on social media for special offers. We regularly run seasonal sales and offer special discounts for first-time customers.",
+    icon: "🎁"
+  },
+  {
+    id: 13,
+    category: "Orders & Modifications",
+    question: "Can I cancel or modify my order after placing it?",
+    answer: "We process orders quickly, but if you need to cancel or make changes, please contact us within 24 hours of placing your order. After this time, we may not be able to modify your order as it may have already entered production.",
+    icon: "✏️"
+  },
+  {
+    id: 14,
+    category: "Materials & Quality",
+    question: "What makes your jewellery different from others?",
+    answer: "Our jewellery combines luxury look with affordable pricing. We use thick electroplating for a radiant finish, premium 316L stainless steel for durability, and all the shine of solid gold without the hefty price tag. Each piece is crafted with attention to detail and designed for everyday elegance.",
+    icon: "⭐"
   }
 ];
 
@@ -72,7 +114,7 @@ export default function FAQSection() {
   const [openItems, setOpenItems] = useState<number[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('All');
 
-  const categories = ['All', ...Array.from(new Set(faqs.map(faq => faq.category)))];
+  const categories = ['All', 'Materials & Quality', 'Care & Maintenance', 'Shipping & Delivery', 'Returns & Warranty', 'Customer Support', 'Promotions & Offers', 'Orders & Modifications'];
   const filteredFaqs = activeCategory === 'All' 
     ? faqs 
     : faqs.filter(faq => faq.category === activeCategory);
@@ -86,34 +128,34 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="section-standard bg-white">
+    <section className="section-standard bg-gradient-to-br from-[#E0D6D6] via-white to-[#E0D6D6]">
       <div className="container-page">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <div className="animate-reveal">
-            <div className="text-small-caps text-xs text-text-muted mb-6 tracking-widest">
+            <div className="text-small-caps text-xs text-[#8DA7A8] mb-6 tracking-widest">
               SUPPORT CENTER
             </div>
-            <h2 className="text-display text-4xl lg:text-5xl mb-8">
-              Frequently Asked <span className="text-serif text-accent">Questions</span>
+            <h2 className="text-display text-4xl lg:text-5xl mb-8 text-[#916849]">
+              Frequently Asked <span className="text-serif text-[#E7C3A8]">Questions</span>
             </h2>
-            <div className="divider"></div>
-            <p className="text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
+            <div className="w-32 h-px bg-gradient-to-r from-transparent via-[#916849] to-transparent mx-auto mb-8"></div>
+            <p className="text-xl text-[#8DA7A8] max-w-3xl mx-auto leading-relaxed">
               Everything you need to know about our handcrafted jewelry, premium materials, and exceptional service.
             </p>
           </div>
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-4 mb-16">
+        <div className="flex flex-wrap justify-center gap-4 mb-20">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 ${
+              className={`px-6 py-3 text-sm font-medium tracking-wide transition-all duration-300 rounded-full border-2 ${
                 activeCategory === category
-                  ? 'bg-primary text-white'
-                  : 'border border-border hover:border-primary hover:text-primary'
+                  ? 'bg-[#916849] text-white border-[#916849] shadow-lg'
+                  : 'border-[#ADC2C2] text-[#8DA7A8] hover:border-[#916849] hover:text-[#916849] hover:bg-white/50'
               }`}
             >
               {category}
@@ -122,32 +164,32 @@ export default function FAQSection() {
         </div>
 
         {/* FAQ Grid */}
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="space-y-6">
             {filteredFaqs.map((faq, index) => (
               <div 
                 key={faq.id}
-                className="bg-white border border-border-light hover:border-accent transition-colors duration-200"
+                className="bg-white/80 backdrop-blur-sm border border-[#ADC2C2]/30 hover:border-[#916849]/30 transition-all duration-300 rounded-xl shadow-sm hover:shadow-lg overflow-hidden"
               >
                 <button
                   onClick={() => toggleItem(faq.id)}
-                  className="w-full p-6 text-left focus:outline-none focus:ring-2 focus:ring-accent/20"
+                  className="w-full p-8 text-left focus:outline-none focus:ring-2 focus:ring-[#916849]/20 rounded-xl"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex-1 pr-4">
-                      <div className="text-small-caps text-xs text-text-muted mb-2 tracking-widest">
+                    <div className="flex-1 pr-6">
+                      <div className="text-small-caps text-xs text-[#8DA7A8] mb-3 tracking-widest">
                         {faq.category}
                       </div>
-                      <h3 className="text-display text-lg text-text-primary">
+                      <h3 className="text-display text-xl text-[#916849] font-medium leading-tight">
                         {faq.question}
                       </h3>
                     </div>
                     
-                    {/* Toggle */}
+                    {/* Enhanced Toggle */}
                     <div className={`
-                      w-6 h-6 flex items-center justify-center text-accent font-bold text-lg
-                      transition-transform duration-200
-                      ${openItems.includes(faq.id) ? 'rotate-45' : 'rotate-0'}
+                      w-10 h-10 flex items-center justify-center text-[#916849] font-bold text-2xl
+                      transition-all duration-300 rounded-full hover:bg-[#916849]/10 border border-[#ADC2C2]/30
+                      ${openItems.includes(faq.id) ? 'rotate-45 bg-[#916849]/10 border-[#916849]/30' : 'rotate-0'}
                     `}>
                       +
                     </div>
@@ -155,13 +197,20 @@ export default function FAQSection() {
                 </button>
                 
                 <div className={`
-                  transition-all duration-300 ease-in-out overflow-hidden
+                  transition-all duration-500 ease-in-out overflow-hidden
                   ${openItems.includes(faq.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
                 `}>
-                  <div className="px-6 pb-6">
-                    <p className="text-text-secondary leading-relaxed">
-                      {faq.answer}
-                    </p>
+                  <div className="px-8 pb-8">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-[#E7C3A8]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-2xl">{faq.icon}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[#8DA7A8] leading-relaxed text-base">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -169,20 +218,44 @@ export default function FAQSection() {
           </div>
         </div>
 
-        {/* Contact Section */}
-        <div className="mt-20 text-center">
-          <div className="bg-accent/5 p-8 max-w-2xl mx-auto">
-            <h3 className="text-display text-xl mb-4">Still have questions?</h3>
-            <p className="text-text-secondary mb-6">
-              Our team is here to help you find the perfect piece.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button className="btn-primary">
+        {/* Enhanced Contact Section */}
+        <div className="mt-24 text-center">
+          <div className="bg-white/60 backdrop-blur-sm border border-[#ADC2C2]/30 p-10 max-w-3xl mx-auto rounded-xl shadow-sm">
+            <div className="mb-8">
+              <h3 className="text-display text-2xl mb-4 text-[#916849]">Still have questions?</h3>
+              <p className="text-[#8DA7A8] text-lg">
+                Our team is here to help you find the perfect piece and answer any questions you may have.
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <button className="px-8 py-4 bg-[#916849] text-white font-medium tracking-wide rounded-lg hover:bg-[#8DA7A8] transition-all duration-300 shadow-sm hover:shadow-md">
                 Contact Support
               </button>
-              <button className="btn-secondary">
+              <button className="px-8 py-4 border-2 border-[#916849] text-[#916849] font-medium tracking-wide rounded-lg hover:bg-[#916849] hover:text-white transition-all duration-300">
                 Live Chat
               </button>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-[#8DA7A8]">
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-10 h-10 bg-[#E7C3A8]/20 rounded-full flex items-center justify-center">
+                  <span className="text-lg">📱</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-[#916849]">WhatsApp Support</p>
+                  <p>+91 98193 99178</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-10 h-10 bg-[#E7C3A8]/20 rounded-full flex items-center justify-center">
+                  <span className="text-lg">📧</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-[#916849]">Email Support</p>
+                  <p>info@anviyjewellery.com</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
