@@ -21,6 +21,7 @@
 html, body {
   height: 100%;
   font-feature-settings: "cv02","cv03","cv04","cv11";
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 body {
@@ -31,10 +32,30 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-width: 100vw; /* Ensure body doesn't exceed viewport width */
 }
 
 .container-page {
-  @apply max-w-[1400px] mx-auto px-6 lg:px-8;
+  @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Mobile-specific container adjustments */
+@media (max-width: 480px) {
+  .container-page {
+    @apply px-3;
+  }
+}
+
+/* Prevent overflow on all main containers */
+main {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Ensure all sections don't overflow */
+section {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Sophisticated Card System */
@@ -119,11 +140,11 @@ body {
 }
 
 .section-standard {
-  @apply py-24 lg:py-32;
+  @apply py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32;
 }
 
 .section-compact {
-  @apply py-16 lg:py-20;
+  @apply py-8 sm:py-12 md:py-16 lg:py-20;
 }
 
 /* Sophisticated Animations */
@@ -920,6 +941,43 @@ body {
   .hero-cta-button {
     @apply px-6 py-3 text-sm;
   }
+  
+  /* Prevent horizontal scroll on mobile */
+  .container-page {
+    @apply px-3;
+  }
+  
+  /* Ensure all text containers don't overflow */
+  .text-display {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Adjust grid gaps for mobile */
+  .grid {
+    gap: 1rem;
+  }
+}
+
+/* Extra small screen optimizations */
+@media (max-width: 480px) {
+  .container-page {
+    @apply px-2;
+  }
+  
+  /* Reduce padding on very small screens */
+  .section-standard {
+    @apply py-8;
+  }
+  
+  .section-compact {
+    @apply py-6;
+  }
+  
+  /* Ensure buttons don't overflow */
+  .btn-primary, .btn-secondary, .btn-accent {
+    @apply px-4 py-3 text-sm;
+  }
 }
 
 /* Touch gesture enhancements */
@@ -1240,6 +1298,24 @@ body {
 
 .mobile-nav-link:hover {
   @apply transform translate-x-1;
+}
+
+/* Prevent any remaining overflow issues */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure images don't cause overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent text overflow */
+.text-display, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
 /* Mobile menu backdrop */

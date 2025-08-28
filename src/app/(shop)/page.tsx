@@ -70,7 +70,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8 xl:gap-12">
             {currentProducts.map((product, i) => (
               <ProductCard 
                 key={product.id}
@@ -100,19 +100,19 @@ export default function HomePage() {
       {/* Craftsmanship Section */}
       <section className="section-standard bg-gray-50">
         <div className="container-page">
-          <div className="grid-editorial">
-            <div className="col-span-12 lg:col-span-5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+            <div className="lg:col-span-5">
               <div className="animate-reveal">
                 <Image 
                   src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=600&h=800&fit=crop"
                   alt="Craftsmanship detail"
                   width={600}
                   height={800}
-                  className="w-full h-[60vh] object-cover"
+                  className="w-full h-[40vh] sm:h-[50vh] lg:h-[60vh] object-cover"
                 />
               </div>
             </div>
-            <div className="col-span-12 lg:col-span-6 lg:col-start-7 flex items-center">
+            <div className="lg:col-span-6 lg:col-start-7 flex items-center">
               <div className="animate-reveal-delay-2">
                 <div className="text-small-caps text-xs text-gray-500 mb-6 tracking-widest">
                   OUR PROCESS
@@ -151,21 +151,19 @@ export default function HomePage() {
       {/* Newsletter Section */}
       <section className="section-compact bg-primary text-white">
         <div className="container-page">
-          <div className="grid-editorial">
-            <div className="col-span-12 lg:col-span-8 lg:col-start-3 text-center">
-              <div className="animate-reveal">
-                <h2 className="text-display text-3xl mb-4">Stay Connected</h2>
-                <p className="text-gray-300 mb-8 leading-relaxed">
-                  Be the first to discover new collections and exclusive pieces.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                  <input 
-                    type="email" 
-                    placeholder="Your email address"
-                    className="input-minimal bg-transparent border-white/30 text-white placeholder-gray-400 flex-1"
-                  />
-                  <button className="btn-accent">Subscribe</button>
-                </div>
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="animate-reveal">
+              <h2 className="text-display text-2xl sm:text-3xl mb-4">Stay Connected</h2>
+              <p className="text-gray-300 mb-8 leading-relaxed text-sm sm:text-base">
+                Be the first to discover new collections and exclusive pieces.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input 
+                  type="email" 
+                  placeholder="Your email address"
+                  className="input-minimal bg-transparent border-white/30 text-white placeholder-gray-400 flex-1"
+                />
+                <button className="btn-accent">Subscribe</button>
               </div>
             </div>
           </div>

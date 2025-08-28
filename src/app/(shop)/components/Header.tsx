@@ -303,7 +303,7 @@ export default function Header() {
           />
 
           {/* Drawer */}
-          <div className="mobile-menu-container fixed top-0 left-0 h-full w-80 max-w-[90vw] bg-white shadow-2xl z-50 lg:hidden animate-slideInLeft">
+          <div className="mobile-menu-container fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl z-50 lg:hidden animate-slideInLeft">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-border">

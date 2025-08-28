@@ -141,7 +141,7 @@ export default function HeroCarousel() {
 
   return (
     <section 
-      className="relative h-[100svh] overflow-hidden bg-[#E0D6D6] will-change-transform"
+      className="relative h-[100vh] sm:h-[100svh] overflow-hidden bg-[#E0D6D6] will-change-transform"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -218,7 +218,7 @@ export default function HeroCarousel() {
                     {/* Main Title - Enhanced Typography */}
                     <div className="overflow-hidden">
                       <h1 
-                        className={`text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.9] tracking-tight text-white transform transition-all duration-1000 delay-400 ${
+                        className={`text-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-light leading-[0.9] tracking-tight text-white transform transition-all duration-1000 delay-400 ${
                           index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
                         }`}
                       >
@@ -229,7 +229,7 @@ export default function HeroCarousel() {
                     {/* Enhanced Description */}
                     <div className="overflow-hidden">
                       <p 
-                        className={`text-lg sm:text-xl lg:text-2xl leading-relaxed font-light text-white/90 max-w-2xl mx-auto lg:mx-0 transform transition-all duration-1000 delay-600 ${
+                        className={`text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed font-light text-white/90 max-w-2xl mx-auto lg:mx-0 transform transition-all duration-1000 delay-600 ${
                           index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
                         }`}
                       >

@@ -50,13 +50,13 @@ export default function MovingTextBanner() {
     <div className="bg-primary text-white overflow-hidden relative">
       {/* Primary Moving Text */}
       <div className="flex">
-        <div className="animate-marquee flex items-center whitespace-nowrap py-3">
+        <div className="animate-marquee flex items-center whitespace-nowrap py-2 sm:py-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center">
               {bannerMessages.map((message, index) => (
-                <div key={`${i}-${message.id}`} className="flex items-center mx-8">
-                  <span className="text-accent mr-3">{message.icon}</span>
-                  <span className="text-sm font-medium tracking-wide">
+                <div key={`${i}-${message.id}`} className="flex items-center mx-4 sm:mx-6 lg:mx-8">
+                  <span className="text-accent mr-2 sm:mr-3">{message.icon}</span>
+                  <span className="text-xs sm:text-sm font-medium tracking-wide">
                     {message.text}
                   </span>
                 </div>
@@ -68,7 +68,7 @@ export default function MovingTextBanner() {
 
       {/* Secondary Sliding Messages */}
       <div className="bg-accent text-primary relative overflow-hidden">
-        <div className="h-12 flex items-center justify-center relative">
+        <div className="h-10 sm:h-12 flex items-center justify-center relative">
           {bannerMessages.map((message, index) => (
             <div
               key={message.id}
@@ -81,8 +81,8 @@ export default function MovingTextBanner() {
               }`}
             >
               <div className="flex items-center">
-                <span className="text-lg mr-3">{message.icon}</span>
-                <span className="font-semibold tracking-wide text-sm">
+                <span className="text-base sm:text-lg mr-2 sm:mr-3">{message.icon}</span>
+                <span className="font-semibold tracking-wide text-xs sm:text-sm">
                   {message.text}
                 </span>
               </div>
