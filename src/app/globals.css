@@ -58,6 +58,17 @@ section {
   max-width: 100vw;
 }
 
+/* Header overflow prevention */
+.nav-minimal {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+.nav-minimal .container-page {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 /* Sophisticated Card System */
 .card {
   @apply bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300;
@@ -1361,6 +1372,28 @@ img {
   
   .container-page {
     @apply px-4;
+  }
+}
+
+/* Enhanced mobile header for very small screens */
+@media (max-width: 480px) {
+  .nav-minimal {
+    @apply py-2;
+  }
+  
+  .container-page {
+    @apply px-3;
+  }
+  
+  /* Ensure buttons don't get cut off */
+  .nav-minimal button,
+  .nav-minimal a {
+    @apply flex-shrink-0;
+  }
+  
+  /* Prevent text overflow */
+  .nav-minimal .text-display {
+    @apply text-base;
   }
 }
 

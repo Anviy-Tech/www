@@ -87,12 +87,12 @@ export default function Header() {
   return (
     <>
       <header className="nav-minimal sticky top-0 z-50">
-        <div className="container-page py-4 lg:py-6">
+        <div className="container-page py-3 lg:py-6">
           <div className="flex items-center justify-between">
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 -ml-2 text-primary hover:text-accent transition-colors duration-300"
+              className="lg:hidden p-2 -ml-1 text-primary hover:text-accent transition-colors duration-300"
               aria-label="Toggle mobile menu"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -105,7 +105,7 @@ export default function Header() {
             </button>
 
             {/* Logo */}
-            <Link href="/" className="text-display text-xl lg:text-2xl tracking-tight">
+            <Link href="/" className="text-display text-lg sm:text-xl lg:text-2xl tracking-tight flex-shrink-0">
               ANVIY
             </Link>
 
@@ -120,7 +120,7 @@ export default function Header() {
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-6">
+            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-6">
               {/* Desktop Search */}
               <div className="hidden md:block">
                 <form onSubmit={handleSearchSubmit} className="relative">
@@ -232,7 +232,7 @@ export default function Header() {
                   )}
                 </div>
               ) : (
-                <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
+                <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
                   {/* Sign In Button - Responsive Design */}
                   <Link 
                     href="/login" 
@@ -257,7 +257,7 @@ export default function Header() {
                   {/* Sign Up Button - Responsive Design */}
                   <Link 
                     href="/register" 
-                    className="inline-flex items-center px-3 sm:px-4 lg:px-6 py-2 text-sm font-medium text-white bg-accent hover:bg-accent-dark transition-colors duration-300 rounded-sm shadow-sm hover:shadow-md"
+                    className="inline-flex items-center px-2 sm:px-3 lg:px-6 py-2 text-xs sm:text-sm font-medium text-white bg-accent hover:bg-accent-dark transition-colors duration-300 rounded-sm shadow-sm hover:shadow-md whitespace-nowrap"
                   >
                     <span className="hidden sm:inline">Sign Up</span>
                     <span className="sm:hidden">Join</span>

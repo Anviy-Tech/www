@@ -376,7 +376,7 @@ export default function HeroCarousel() {
       <button
         onClick={prevSlide}
         disabled={isTransitioning}
-        className="group absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-14 lg:h-14 
+        className="group absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 lg:w-10 lg:h-10 
           rounded-full border border-white/30 bg-white/10 backdrop-blur-md transition-all duration-500 ease-out hover:bg-white/20 focus:outline-none
           will-change-transform disabled:opacity-30 disabled:cursor-not-allowed text-white hover:text-[#E7C3A8]"
         style={{
@@ -385,7 +385,7 @@ export default function HeroCarousel() {
         }}
         aria-label="Previous slide"
       >
-        <svg className="w-5 h-5 lg:w-6 lg:h-6 mx-auto transition-transform duration-500 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <svg className="w-3 h-3 lg:w-4 lg:h-4 mx-auto transition-transform duration-500 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
@@ -393,7 +393,7 @@ export default function HeroCarousel() {
       <button
         onClick={nextSlide}
         disabled={isTransitioning}
-        className="group absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-14 lg:h-14 
+        className="group absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 lg:w-10 lg:h-10 
           rounded-full border border-white/30 bg-white/10 backdrop-blur-md transition-all duration-500 ease-out hover:bg-white/20 focus:outline-none
           will-change-transform disabled:opacity-30 disabled:cursor-not-allowed text-white hover:text-[#E7C3A8]"
         style={{
@@ -402,7 +402,7 @@ export default function HeroCarousel() {
         }}
         aria-label="Next slide"
       >
-        <svg className="w-5 h-5 lg:w-6 lg:h-6 mx-auto transition-transform duration-500 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+        <svg className="w-3 h-3 lg:w-4 lg:h-4 mx-auto transition-transform duration-500 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
