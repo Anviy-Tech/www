@@ -27,6 +27,16 @@ coverage/
 .esbuild/
 
 # =========================
+# Next.js Specific
+# =========================
+# Next.js build output
+.next/
+# Next.js cache
+.next/cache/
+# Next.js static files (if you want to ignore them)
+.next/static/
+
+# =========================
 # Environment Files
 # =========================
 .env
@@ -34,6 +44,7 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
+.env*.local
 
 # =========================
 # Logs
@@ -58,27 +69,92 @@ yarn-error.log*
 # Editor / OS
 # =========================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 *.swp
 *.swo
+*~
 .vscode/
 .idea/
 *.iml
+*.sublime-project
+*.sublime-workspace
 
 # =========================
 # TypeScript
 # =========================
 *.tsbuildinfo
+.tscache/
 
 # =========================
 # Deployment
 # =========================
 .netlify/
 .vercel/
+.now/
+
+# =========================
+# Testing
+# =========================
+coverage/
+.nyc_output/
+.jest/
+
+# =========================
+# Cache and Temporary Files
+# =========================
+.cache/
+.tmp/
+.temp/
+*.tmp
+*.temp
+*.cache
+
+# =========================
+# Compressed Files
+# =========================
+*.gz
+*.gzip
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# =========================
+# OS Generated Files
+# =========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =========================
+# IDE and Editor Files
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
 
 # =========================
 # Misc
 # =========================
 *.tgz
 *.zip
+*.bak
+*.backup
+*.orig
+*.rej
 
