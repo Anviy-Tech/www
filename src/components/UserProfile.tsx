@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuthStore } from '@/store/auth';
+import { useAuth, useAuthUser } from '@/store/auth';
 import { userAPI } from '@/lib/api';
 import { useToast } from '@/components/Toast';
-import { LoadingSkeleton } from '@/components/LoadingSkeleton';
+import LoadingSkeleton, { ProductGridSkeleton } from '@/components/LoadingSkeleton';
 
 interface Address {
   id: string;
@@ -27,7 +27,7 @@ interface ProfileFormData {
 }
 
 export const UserProfile: React.FC = () => {
-  const { user, updateUser } = useAuthStore();
+  const { user, updateUser } = useAuth();
   const { addToast } = useToast();
   
   const [loading, setLoading] = useState(false);
@@ -202,7 +202,7 @@ export const UserProfile: React.FC = () => {
   }
 
   if (loading) {
-    return <LoadingSkeleton.ProductGridSkeleton count={4} />;
+    return <ProductGridSkeleton count={4} />;
   }
 
   return (

@@ -108,7 +108,14 @@ export default function ShopContent() {
     
     // If still not found, create a temporary category object for display
     if (!category) {
-      category = { _id: tag, name: tag.charAt(0).toUpperCase() + tag.slice(1) };
+      category = { 
+        _id: tag, 
+        name: tag.charAt(0).toUpperCase() + tag.slice(1),
+        description: '',
+        slug: tag.toLowerCase(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
     }
     
     return category;

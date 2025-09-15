@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import RazorpayService, { RazorpayOrderData } from '@/lib/razorpay';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthUser } from '@/store/auth';
 
 interface RazorpayPaymentButtonProps {
   amount: number;
@@ -28,7 +28,7 @@ export const RazorpayPaymentButton: React.FC<RazorpayPaymentButtonProps> = ({
   children,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
+  const user = useAuthUser();
 
   const handlePayment = async () => {
     if (!user) {

@@ -18,6 +18,7 @@ interface AuthState {
   logout: () => Promise<void>;
   getCurrentUser: () => Promise<void>;
   refreshAuth: () => Promise<void>;
+  updateUser: (user: User) => void;
   clearError: () => void;
   setLoading: (loading: boolean) => void;
 }
@@ -174,6 +175,11 @@ export const useAuth = create<AuthState>()(
           });
           throw error;
         }
+      },
+
+      // Update user
+      updateUser: (user: User) => {
+        set({ user });
       },
 
       // Clear error

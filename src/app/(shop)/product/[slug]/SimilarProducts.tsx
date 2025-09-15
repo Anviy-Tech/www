@@ -17,8 +17,14 @@ export default function SimilarProducts({ currentProduct }: SimilarProductsProps
       try {
         setLoading(true);
         
+        // Only fetch if we have a valid category ID
+        if (!currentProduct.category?._id) {
+          setSimilarProducts([]);
+          return;
+        }
+        
         // Get products from the same category
-        const response = await productsAPI.getProductsByCategory(currentProduct.category?._id, {
+        const response = await productsAPI.getProductsByCategory(currentProduct.category._id, {
           page: 1,
           limit: 8
         });
@@ -92,14 +98,16 @@ export default function SimilarProducts({ currentProduct }: SimilarProductsProps
         </div>
 
         {/* View More */}
-        <div className="text-center mt-16">
-          <a 
-            href={`/shop?tag=${currentProduct.category?._id}`}
-            className="btn-secondary"
-          >
-            View All Products
-          </a>
-        </div>
+        {currentProduct.category?._id && (
+          <div className="text-center mt-16">
+            <a 
+              href={`/shop?tag=${currentProduct.category._id}`}
+              className="btn-secondary"
+            >
+              View All Products
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

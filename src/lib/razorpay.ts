@@ -85,11 +85,11 @@ export class RazorpayService {
     try {
       const response = await apiRequest('/payment/create-order', {
         method: 'POST',
-        body: orderData,
+        body: JSON.stringify(orderData),
       });
 
       if (!response.success) {
-        throw new Error(response.error?.message || 'Failed to create order');
+        throw new Error(response.error || 'Failed to create order');
       }
 
       return response.data;
@@ -157,11 +157,11 @@ export class RazorpayService {
     try {
       const response = await apiRequest('/payment/verify', {
         method: 'POST',
-        body: paymentData,
+        body: JSON.stringify(paymentData),
       });
 
       if (!response.success) {
-        throw new Error(response.error?.message || 'Payment verification failed');
+        throw new Error(response.error || 'Payment verification failed');
       }
 
       return response.data;
@@ -181,10 +181,10 @@ export class RazorpayService {
       });
 
       if (!response.success) {
-        throw new Error(response.error?.message || 'Failed to get payment methods');
+        throw new Error(response.error || 'Failed to get payment methods');
       }
 
-      return response.data.paymentMethods;
+      return (response.data as any).paymentMethods;
     } catch (error) {
       console.error('Failed to get payment methods:', error);
       throw error;
@@ -201,7 +201,7 @@ export class RazorpayService {
       });
 
       if (!response.success) {
-        throw new Error(response.error?.message || 'Failed to get payment history');
+        throw new Error(response.error || 'Failed to get payment history');
       }
 
       return response.data;
@@ -223,11 +223,11 @@ export class RazorpayService {
     try {
       const response = await apiRequest('/payment/refund', {
         method: 'POST',
-        body: refundData,
+        body: JSON.stringify(refundData),
       });
 
       if (!response.success) {
-        throw new Error(response.error?.message || 'Failed to process refund');
+        throw new Error(response.error || 'Failed to process refund');
       }
 
       return response.data;

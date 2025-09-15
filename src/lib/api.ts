@@ -104,7 +104,7 @@ export const authAPI = {
     if (response.success && response.data) {
       // Store tokens
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', response.data.accessToken);
+        localStorage.setItem('auth_token', response.data.token);
         localStorage.setItem('refresh_token', response.data.refreshToken);
       }
       return response.data;
@@ -123,7 +123,7 @@ export const authAPI = {
     if (response.success && response.data) {
       // Store tokens
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', response.data.accessToken);
+        localStorage.setItem('auth_token', response.data.token);
         localStorage.setItem('refresh_token', response.data.refreshToken);
       }
       return response.data;
@@ -174,7 +174,7 @@ export const authAPI = {
     if (response.success && response.data) {
       // Update tokens
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', response.data.accessToken);
+        localStorage.setItem('auth_token', response.data.token);
         localStorage.setItem('refresh_token', response.data.refreshToken);
       }
       return response.data;
