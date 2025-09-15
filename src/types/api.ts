@@ -37,18 +37,18 @@ export interface RegisterCredentials {
 
 // Product Types
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
-  slug: string;
   description: string;
   price: number;
-  salePrice?: number;
   stock: number;
   images: string[];
-  tags: string[];
-  category: string;
-  specifications?: Record<string, any>;
-  isActive: boolean;
+  category?: {
+    _id: string;
+    name: string;
+    slug: string;
+  };
+  inStock: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -63,13 +63,12 @@ export interface ProductVariant {
 }
 
 export interface Category {
-  id: string;
+  _id: string;
   name: string;
+  description: string;
   slug: string;
-  description?: string;
-  image?: string;
-  parentId?: string;
-  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Cart Types
@@ -206,13 +205,10 @@ export interface PaginationParams {
 }
 
 export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
+  [key: string]: T[] | {
     page: number;
     limit: number;
     total: number;
     totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
   };
 }

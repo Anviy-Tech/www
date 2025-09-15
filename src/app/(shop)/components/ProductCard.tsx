@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useCart } from '@/store/cart';
 import { useFavorites } from '@/store/favorites';
-import { Product } from '@/data/products';
+import { PLACEHOLDER_IMAGES, getFirstImage } from '@/lib/imageUtils';
+import { Product } from '@/types/api';
+import { TIMING, ANIMATION_DELAYS } from '@/lib/constants';
 
 interface ProductCardProps {
   product: Product;
@@ -15,26 +17,36 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
   const add = useCart(s => s.add);
   const { addItem: addToFavorites, removeItem: removeFromFavorites, isFavorite } = useFavorites();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
-  const isProductFavorite = isFavorite(product.id);
+  const isProductFavorite = isFavorite(product._id);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsAddingToCart(true);
     
-    add({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      slug: product.slug
-    }, 1);
-    
-    // Brief loading state for better UX
-    setTimeout(() => {
-      setIsAddingToCart(false);
-    }, 600);
+    try {
+      add({
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        image: getFirstImage(product.images),
+        slug: product._id // Using _id as slug for now
+      }, 1);
+      
+      // Success feedback
+      // Note: You can integrate with toast system here
+      console.log('Added to cart successfully');
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      // Error feedback
+    } finally {
+      // Brief loading state for better UX
+      setTimeout(() => {
+        setIsAddingToCart(false);
+      }, TIMING.CART_ADD_DELAY);
+    }
   };
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
@@ -42,32 +54,33 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
     e.stopPropagation();
     
     if (isProductFavorite) {
-      removeFromFavorites(product.id);
+      removeFromFavorites(product._id);
     } else {
       addToFavorites({
-        id: product.id,
+        id: product._id,
         name: product.name,
         price: product.price,
-        image: product.image,
-        slug: product.slug
+        image: getFirstImage(product.images),
+        slug: product._id // Using _id as slug for now
       });
     }
   };
 
   return (
     <article className={`group relative bg-white hover:shadow-2xl transition-all duration-500 ease-out hover:-translate-y-1 ${className}`}>
-      <Link href={`/product/${product.slug}`} className="block h-full">
+      <Link href={`/product/${product._id}`} className="block h-full">
         {/* Image Container with Modern Aspect Ratio */}
         <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
           {/* Main Product Image */}
           <div className="aspect-square relative">
             <Image 
-              src={product.image} 
+              src={imageError ? PLACEHOLDER_IMAGES.productCard : getFirstImage(product.images)} 
               alt={product.name}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               className="object-cover transition-all duration-700 group-hover:scale-110"
               priority={false}
+              onError={() => setImageError(true)}
             />
             
             {/* Modern Gradient Overlay */}
@@ -81,6 +94,8 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
                   className="px-4 py-2.5 sm:px-6 sm:py-3 bg-white/95 hover:bg-white text-primary font-medium text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg backdrop-blur-sm"
+                  aria-label={isAddingToCart ? 'Adding to cart...' : `Add ${product.name} to cart`}
+                  aria-busy={isAddingToCart}
                 >
                   {isAddingToCart ? (
                     <div className="flex items-center gap-2">
@@ -93,7 +108,10 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
                 </button>
                 
                 {/* Quick View Button - Secondary Action */}
-                <button className="px-4 py-2.5 sm:px-6 sm:py-3 bg-primary/90 hover:bg-primary text-white font-medium text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-lg backdrop-blur-sm">
+                <button 
+                  className="px-4 py-2.5 sm:px-6 sm:py-3 bg-primary/90 hover:bg-primary text-white font-medium text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-lg backdrop-blur-sm"
+                  aria-label={`Quick view ${product.name}`}
+                >
                   <span className="hidden sm:inline">Quick View</span>
                   <span className="sm:hidden">View</span>
                 </button>
@@ -101,7 +119,12 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
             </div>
 
             {/* Stock Badge - Modern Design */}
-            {product.stock < 10 && (
+            {!product.inStock && (
+              <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-2.5 py-1.5 uppercase tracking-wide shadow-lg">
+                Out of Stock
+              </div>
+            )}
+            {product.inStock && product.stock < 10 && (
               <div className="absolute top-3 left-3 bg-accent text-white text-xs font-semibold px-2.5 py-1.5 uppercase tracking-wide shadow-lg">
                 <span className="hidden sm:inline">Only {product.stock} left</span>
                 <span className="sm:hidden">{product.stock} left</span>
@@ -134,7 +157,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
           {/* Category Tag */}
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-text-muted uppercase tracking-widest">
-              {product.tags[0] || 'Jewelry'}
+              {product.category?.name || 'Jewelry'}
             </span>
             {/* Rating - Compact Mobile */}
             <div className="flex items-center gap-1">
@@ -167,7 +190,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
               </span>
               {/* Stock Status for Mobile */}
               <span className="text-xs text-green-600 font-medium sm:hidden">
-                {product.stock > 10 ? 'In Stock' : `${product.stock} left`}
+                {product.inStock ? (product.stock > 10 ? 'In Stock' : `${product.stock} left`) : 'Out of Stock'}
               </span>
             </div>
             

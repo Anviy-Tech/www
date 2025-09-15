@@ -1,7 +1,8 @@
 "use client";
 import Image from 'next/image';
-import { useState } from 'react';
-import { Product } from '@/data/products';
+import React, { useState } from 'react';
+import { Product } from '@/types/api';
+import { PLACEHOLDER_IMAGES, generateMultiplePlaceholders, getProxiedImageUrl } from '@/lib/imageUtils';
 
 interface ProductGalleryProps {
   product: Product;
@@ -10,14 +11,29 @@ interface ProductGalleryProps {
 export default function ProductGallery({ product }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [imageErrors, setImageErrors] = useState<boolean[]>([]);
   
-  // Generate multiple views for demo (in real app, this would come from product data)
-  const images = [
-    product.image,
-    product.image, // Front view
-    product.image, // Side view  
-    product.image, // Detail view
-  ];
+  // Use product images from API with proper URL handling
+  const images = React.useMemo(() => {
+    if (!product.images || product.images.length === 0) {
+      return generateMultiplePlaceholders(3, 800, 800);
+    }
+    
+    // Convert all image URLs to use proxied paths
+    return product.images.map(img => getProxiedImageUrl(img));
+  }, [product.images]);
+
+
+
+  // Initialize image errors array
+  React.useEffect(() => {
+    setImageErrors(new Array(images.length).fill(false));
+  }, [images.length]);
+
+  const handleImageError = (index: number) => {
+    // This should not happen with placeholder images, but keeping for safety
+    console.log(`Image ${index} failed to load:`, images[index]);
+  };
 
   return (
     <div className="space-y-6">
@@ -37,6 +53,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
             className={`w-full aspect-square object-cover transition-transform duration-700 ${
               isZoomed ? 'scale-150' : 'scale-100 group-hover:scale-105'
             }`}
+            onError={() => handleImageError(selectedImage)}
           />
           
           {/* Zoom Indicator */}
@@ -47,6 +64,13 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
               <path d="M11 8v6M8 11h6"/>
             </svg>
           </div>
+          
+          {/* Multiple Images Indicator */}
+          {images.length > 1 && (
+            <div className="absolute top-4 left-4 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+              {images.length} images
+            </div>
+          )}
         </div>
         
         {/* Navigation Arrows */}
@@ -71,26 +95,27 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
       {/* Thumbnail Gallery */}
       <div className="grid grid-cols-4 gap-4">
         {images.map((image, index) => (
-          <button
-            key={index}
-            onClick={() => setSelectedImage(index)}
-            className={`relative aspect-square overflow-hidden bg-white transition-all duration-300 ${
-              selectedImage === index 
-                ? 'ring-2 ring-accent' 
-                : 'hover:ring-2 hover:ring-border'
-            }`}
-          >
-            <Image
-              src={image}
-              alt={`${product.name} view ${index + 1}`}
-              width={200}
-              height={200}
-              className="w-full h-full object-cover"
-            />
-            <div className={`absolute inset-0 transition-opacity duration-300 ${
-              selectedImage === index ? 'bg-transparent' : 'bg-white/20'
-            }`} />
-          </button>
+            <button
+              key={index}
+              onClick={() => setSelectedImage(index)}
+              className={`relative aspect-square overflow-hidden bg-white transition-all duration-300 ${
+                selectedImage === index 
+                  ? 'ring-2 ring-accent' 
+                  : 'hover:ring-2 hover:ring-border'
+              }`}
+            >
+              <Image
+                src={image}
+                alt={`${product.name} view ${index + 1}`}
+                width={200}
+                height={200}
+                className="w-full h-full object-cover"
+                onError={() => handleImageError(index)}
+              />
+              <div className={`absolute inset-0 transition-opacity duration-300 ${
+                selectedImage === index ? 'bg-transparent' : 'bg-white/20'
+              }`} />
+            </button>
         ))}
       </div>
 

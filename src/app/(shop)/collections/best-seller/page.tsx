@@ -1,16 +1,44 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { products } from '@/data/products';
+import { useEffect, useState } from 'react';
+import { productsAPI } from '@/lib/api';
+import { Product } from '@/types/api';
 import ProductCard from '../../components/ProductCard';
 import Pagination from '../../components/Pagination';
 import { usePagination } from '../../hooks/usePagination';
 
 export default function BestSellerPage() {
-  // Show products with high stock as "best sellers"
-  const bestSellers = products.filter(p => p.stock > 30);
+  const [bestSellers, setBestSellers] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const PRODUCTS_PER_PAGE = 8;
+
+  useEffect(() => {
+    const fetchBestSellers = async () => {
+      try {
+        setLoading(true);
+        const response = await productsAPI.getProducts({
+          page: 1,
+          limit: 20, // Get more products for pagination
+          sort: 'createdAt',
+          order: 'desc'
+        });
+        // Filter products with good stock as "best sellers"
+        const filtered = response.products.filter(p => p.stock > 10);
+        setBestSellers(filtered);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch best sellers');
+        console.error('Error fetching best sellers:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBestSellers();
+  }, []);
+
   const {
     currentPage,
     totalPages,
@@ -59,15 +87,37 @@ export default function BestSellerPage() {
         </div>
         
         {/* Products Grid */}
-        <div id="best-sellers-grid" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
-          {currentProducts.map((product, i) => (
-            <ProductCard 
-              key={product.id}
-              product={product}
-              className={`animate-reveal-delay-${Math.min(i % 4, 3)}`}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div id="best-sellers-grid" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 mb-4">Failed to load best sellers</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="btn-minimal"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : (
+          <div id="best-sellers-grid" className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 lg:gap-12">
+            {currentProducts.map((product, i) => (
+              <ProductCard 
+                key={product._id}
+                product={product}
+                className={`animate-reveal-delay-${Math.min(i % 4, 3)}`}
+              />
+            ))}
+          </div>
+        )}
         
         {/* Pagination */}
         {totalPages > 1 && (

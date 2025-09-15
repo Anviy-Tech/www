@@ -3,13 +3,20 @@ import ProductGallery from './ProductGallery';
 import ProductDetails from './ProductDetails';
 import SimilarProducts from './SimilarProducts';
 import ProductReviews from './ProductReviews';
-import { products } from '@/data/products';
+import { productsAPI } from '@/lib/api';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 type Props = { params: { slug: string } };
 
-export default function ProductPage({ params }: Props) {
-  const product = products.find(p => p.slug === params.slug);
-  if (!product) return notFound();
+export default async function ProductPage({ params }: Props) {
+  try {
+    const response = await productsAPI.getProduct(params.slug);
+    const product = response.product;
+    
+    if (!product) return notFound();
 
   return (
     <div className="min-h-screen bg-secondary">
@@ -121,7 +128,7 @@ export default function ProductPage({ params }: Props) {
                   </div>
                   <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
                     <span className="text-[#8DA7A8]">Category</span>
-                    <span className="font-medium text-[#916849] capitalize">{product.tags[0] || 'Jewelry'}</span>
+                    <span className="font-medium text-[#916849] capitalize">Jewelry</span>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -184,6 +191,10 @@ export default function ProductPage({ params }: Props) {
       <SimilarProducts currentProduct={product} />
     </div>
   );
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return notFound();
+  }
 }
 
 

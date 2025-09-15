@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { useCart } from '@/store/cart';
 import { useFavorites } from '@/store/favorites';
-import { Product } from '@/data/products';
+import { Product } from '@/types/api';
+import { PLACEHOLDER_IMAGES, getFirstImage } from '@/lib/imageUtils';
 
 interface ProductDetailsProps {
   product: Product;
@@ -15,18 +16,18 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedSize, setSelectedSize] = useState('One Size');
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   
-  const isProductFavorite = isFavorite(product.id);
+  const isProductFavorite = isFavorite(product._id);
   const sizes = ['XS', 'S', 'M', 'L', 'One Size'];
 
   const handleAddToCart = async () => {
     setIsAddingToCart(true);
     
     add({
-      id: product.id,
+      id: product._id,
       name: product.name,
       price: product.price,
-      image: product.image,
-      slug: product.slug
+      image: getFirstImage(product.images),
+      slug: product._id // Using _id as slug for now
     }, quantity);
     
     setTimeout(() => {
@@ -36,14 +37,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
   const handleToggleFavorite = () => {
     if (isProductFavorite) {
-      removeFromFavorites(product.id);
+      removeFromFavorites(product._id);
     } else {
       addToFavorites({
-        id: product.id,
+        id: product._id,
         name: product.name,
         price: product.price,
-        image: product.image,
-        slug: product.slug
+        image: getFirstImage(product.images),
+        slug: product._id // Using _id as slug for now
       });
     }
   };
@@ -56,7 +57,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         <span className="mx-2">/</span>
         <span>Shop</span>
         <span className="mx-2">/</span>
-        <span className="capitalize">{product.tags[0] || 'Jewelry'}</span>
+        <span className="capitalize">{product.category?.name || 'Jewelry'}</span>
         <span className="mx-2">/</span>
         <span className="text-text-primary">{product.name}</span>
       </nav>
@@ -64,7 +65,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
       {/* Product Title & Price */}
       <div>
         <div className="text-small-caps text-xs text-text-muted mb-4 tracking-widest">
-          {product.tags[0]?.toUpperCase() || 'JEWELRY'}
+          {product.category?.name?.toUpperCase() || 'JEWELRY'}
         </div>
         <h1 className="text-display text-4xl lg:text-5xl mb-6 leading-tight">
           {product.name}

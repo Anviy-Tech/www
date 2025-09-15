@@ -13,8 +13,8 @@ interface AuthState {
   error: string | null;
 
   // Actions
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<{ success: boolean; user?: User; error?: string }>;
+  register: (credentials: RegisterCredentials) => Promise<{ success: boolean; user?: User; error?: string }>;
   logout: () => Promise<void>;
   getCurrentUser: () => Promise<void>;
   refreshAuth: () => Promise<void>;
@@ -48,12 +48,16 @@ export const useAuth = create<AuthState>()(
             isLoading: false,
             error: null,
           });
+          
+          return { success: true, user: response.user };
         } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Login failed';
           set({
             isLoading: false,
-            error: error instanceof Error ? error.message : 'Login failed',
+            error: errorMessage,
           });
-          throw error;
+          
+          return { success: false, error: errorMessage };
         }
       },
 
@@ -72,12 +76,16 @@ export const useAuth = create<AuthState>()(
             isLoading: false,
             error: null,
           });
+          
+          return { success: true, user: response.user };
         } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Registration failed';
           set({
             isLoading: false,
-            error: error instanceof Error ? error.message : 'Registration failed',
+            error: errorMessage,
           });
-          throw error;
+          
+          return { success: false, error: errorMessage };
         }
       },
 

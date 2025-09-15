@@ -1,7 +1,9 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { products } from '@/data/products';
+import { useEffect, useState } from 'react';
+import { productsAPI } from '@/lib/api';
+import { Product } from '@/types/api';
 import FAQSection from './components/FAQSection';
 import ProductCard from './components/ProductCard';
 import HeroCarousel from './components/HeroCarousel';
@@ -16,9 +18,35 @@ import GiftFinder from './components/GiftFinder';
 import VideoShowcase from './components/VideoShowcase';
 import OurStory from './components/OurStory';
 import EveryPieceStory from './components/EveryPieceStory';
+import { PAGINATION } from '@/lib/constants';
 
 export default function HomePage() {
-  const PRODUCTS_PER_PAGE = 8;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await productsAPI.getProducts({
+          page: 1,
+          limit: 20, // Get more products for the homepage
+          sort: 'createdAt',
+          order: 'desc'
+        });
+        setProducts(response.products);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch products');
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const {
     currentPage,
     totalPages,
@@ -26,7 +54,7 @@ export default function HomePage() {
     goToPage
   } = usePagination({
     items: products,
-    itemsPerPage: PRODUCTS_PER_PAGE,
+    itemsPerPage: PAGINATION.DEFAULT_PAGE_SIZE,
     initialPage: 1,
     scrollToTop: true,
     scrollTargetId: 'products-section'
@@ -65,20 +93,42 @@ export default function HomePage() {
                 HANDPICKED BY OUR ARTISANS
               </div>
               <div className="text-sm text-text-secondary">
-                Showing {((currentPage - 1) * PRODUCTS_PER_PAGE) + 1}-{Math.min(currentPage * PRODUCTS_PER_PAGE, products.length)} of {products.length} pieces
+                Showing {((currentPage - 1) * PAGINATION.DEFAULT_PAGE_SIZE) + 1}-{Math.min(currentPage * PAGINATION.DEFAULT_PAGE_SIZE, products.length)} of {products.length} pieces
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8 xl:gap-12">
-            {currentProducts.map((product, i) => (
-              <ProductCard 
-                key={product.id}
-                product={product}
-                className={`animate-reveal-delay-${Math.min(i % 4, 3)}`}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8 xl:gap-12">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 mb-4">Failed to load products</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="btn-minimal"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8 xl:gap-12">
+              {currentProducts.map((product, i) => (
+                <ProductCard 
+                  key={product._id}
+                  product={product}
+                  className={`animate-reveal-delay-${Math.min(i % 4, 3)}`}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (

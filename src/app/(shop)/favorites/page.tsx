@@ -1,16 +1,51 @@
 "use client";
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useFavorites } from '@/store/favorites';
 import ProductCard from '../components/ProductCard';
-import { products } from '@/data/products';
+import { productsAPI } from '@/lib/api';
+import { Product } from '@/types/api';
 
 export default function FavoritesPage() {
   const { items: favoriteItems, clearFavorites } = useFavorites();
-  
-  // Get full product data for favorites
-  const favoriteProducts = favoriteItems.map(favItem => 
-    products.find(p => p.id === favItem.id)
-  ).filter(Boolean) as typeof products;
+  const [favoriteProducts, setFavoriteProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFavoriteProducts = async () => {
+      if (favoriteItems.length === 0) {
+        setFavoriteProducts([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const products: Product[] = [];
+        
+        // Fetch each favorite product
+        for (const favItem of favoriteItems) {
+          try {
+            const response = await productsAPI.getProduct(favItem.id);
+            products.push(response.product);
+          } catch (err) {
+            console.error(`Failed to fetch product ${favItem.id}:`, err);
+            // Continue with other products even if one fails
+          }
+        }
+        
+        setFavoriteProducts(products);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch favorite products');
+        console.error('Error fetching favorite products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavoriteProducts();
+  }, [favoriteItems]);
 
   return (
     <div className="container-page section-standard">
@@ -34,11 +69,31 @@ export default function FavoritesPage() {
       </div>
       
       {/* Favorites Grid */}
-      {favoriteProducts.length > 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-12">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 mb-4">Failed to load favorites</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn-minimal"
+          >
+            Try Again
+          </button>
+        </div>
+      ) : favoriteProducts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-12">
           {favoriteProducts.map((product, i) => (
             <ProductCard 
-              key={product.id}
+              key={product._id}
               product={product}
               className={`animate-reveal-delay-${Math.min(i % 4, 3)}`}
             />

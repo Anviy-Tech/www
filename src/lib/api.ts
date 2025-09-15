@@ -19,11 +19,11 @@ import {
 } from '@/types/api';
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 const API_TIMEOUT = 10000;
 
 // Custom fetch wrapper with timeout and error handling
-async function apiRequest<T>(
+export async function apiRequest<T>(
   endpoint: string, 
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
@@ -46,8 +46,23 @@ async function apiRequest<T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch {
+        // If we can't parse the error response, use the status text
+        errorMessage = response.statusText || errorMessage;
+      }
+
+      // Create a more informative error
+      const error = new Error(errorMessage);
+      (error as any).status = response.status;
+      (error as any).statusText = response.statusText;
+      (error as any).endpoint = endpoint;
+      
+      throw error;
     }
 
     const data = await response.json();
@@ -57,12 +72,23 @@ async function apiRequest<T>(
     
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
+        const timeoutError = new Error('Request timeout - please try again');
+        (timeoutError as any).isTimeout = true;
+        throw timeoutError;
       }
+      
+      // Add additional context to the error
+      (error as any).endpoint = endpoint;
+      (error as any).timestamp = new Date().toISOString();
+      
       throw error;
     }
     
-    throw new Error('An unexpected error occurred');
+    const unexpectedError = new Error('An unexpected error occurred');
+    (unexpectedError as any).endpoint = endpoint;
+    (unexpectedError as any).timestamp = new Date().toISOString();
+    
+    throw unexpectedError;
   }
 }
 
@@ -78,7 +104,7 @@ export const authAPI = {
     if (response.success && response.data) {
       // Store tokens
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', response.data.token);
+        localStorage.setItem('auth_token', response.data.accessToken);
         localStorage.setItem('refresh_token', response.data.refreshToken);
       }
       return response.data;
@@ -97,7 +123,7 @@ export const authAPI = {
     if (response.success && response.data) {
       // Store tokens
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', response.data.token);
+        localStorage.setItem('auth_token', response.data.accessToken);
         localStorage.setItem('refresh_token', response.data.refreshToken);
       }
       return response.data;
@@ -140,7 +166,7 @@ export const authAPI = {
       throw new Error('No refresh token available');
     }
 
-    const response = await apiRequest<AuthResponse>('/auth/refresh', {
+    const response = await apiRequest<AuthResponse>('/auth/refresh-token', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
     });
@@ -148,7 +174,7 @@ export const authAPI = {
     if (response.success && response.data) {
       // Update tokens
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', response.data.token);
+        localStorage.setItem('auth_token', response.data.accessToken);
         localStorage.setItem('refresh_token', response.data.refreshToken);
       }
       return response.data;
@@ -185,7 +211,16 @@ export const authAPI = {
 // Products API
 export const productsAPI = {
   // Get all products with pagination and filters
-  getProducts: async (params?: PaginationParams & SearchFilters): Promise<PaginatedResponse<Product>> => {
+  getProducts: async (params?: {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    order?: 'asc' | 'desc';
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    search?: string;
+  }): Promise<{ products: Product[]; pagination: any }> => {
     const searchParams = new URLSearchParams();
     
     if (params) {
@@ -196,7 +231,11 @@ export const productsAPI = {
       });
     }
 
-    const response = await apiRequest<PaginatedResponse<Product>>(`/products?${searchParams.toString()}`);
+    // Add cache-busting timestamp
+    const timestamp = Date.now();
+    searchParams.append('t', String(timestamp));
+
+    const response = await apiRequest<{ products: Product[]; pagination: any }>(`/products?${searchParams.toString()}`);
     
     if (response.success && response.data) {
       return response.data;
@@ -206,8 +245,10 @@ export const productsAPI = {
   },
 
   // Get single product by ID
-  getProduct: async (id: string): Promise<Product> => {
-    const response = await apiRequest<Product>(`/products/${id}`);
+  getProduct: async (id: string): Promise<{ product: Product }> => {
+    // Add cache-busting timestamp
+    const timestamp = Date.now();
+    const response = await apiRequest<{ product: Product }>(`/products/${id}?t=${timestamp}`);
     
     if (response.success && response.data) {
       return response.data;
@@ -216,34 +257,37 @@ export const productsAPI = {
     throw new Error(response.message || 'Failed to fetch product');
   },
 
-  // Get product by slug
-  getProductBySlug: async (slug: string): Promise<Product> => {
-    const response = await apiRequest<Product>(`/products/slug/${slug}`);
+  // Get products by category
+  getProductsByCategory: async (categoryId: string, params?: {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    order?: 'asc' | 'desc';
+  }): Promise<{ products: Product[]; pagination: any }> => {
+    const searchParams = new URLSearchParams();
     
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error(response.message || 'Failed to fetch product');
-  },
-
-  // Search products
-  searchProducts: async (query: string, filters?: SearchFilters): Promise<SearchResponse> => {
-    const searchParams = new URLSearchParams({ q: query });
-    
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach(v => searchParams.append(key, String(v)));
-          } else {
-            searchParams.append(key, String(value));
-          }
+          searchParams.append(key, String(value));
         }
       });
     }
 
-    const response = await apiRequest<SearchResponse>(`/products/search?${searchParams.toString()}`);
+    const response = await apiRequest<{ products: Product[]; pagination: any }>(`/products/category/${categoryId}?${searchParams.toString()}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch products by category');
+  },
+
+  // Search products
+  searchProducts: async (query: string): Promise<{ products: Product[]; pagination: any }> => {
+    const searchParams = new URLSearchParams({ q: query });
+
+    const response = await apiRequest<{ products: Product[]; pagination: any }>(`/products/search?${searchParams.toString()}`);
     
     if (response.success && response.data) {
       return response.data;
@@ -251,10 +295,28 @@ export const productsAPI = {
     
     throw new Error(response.message || 'Search failed');
   },
+};
 
-  // Get categories
-  getCategories: async (): Promise<Category[]> => {
-    const response = await apiRequest<Category[]>('/categories');
+// Categories API
+export const categoriesAPI = {
+  // Get all categories with pagination
+  getCategories: async (params?: {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    order?: 'asc' | 'desc';
+  }): Promise<{ categories: Category[]; pagination: any }> => {
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await apiRequest<{ categories: Category[]; pagination: any }>(`/categories?${searchParams.toString()}`);
     
     if (response.success && response.data) {
       return response.data;
@@ -263,15 +325,39 @@ export const productsAPI = {
     throw new Error(response.message || 'Failed to fetch categories');
   },
 
-  // Get related products
-  getRelatedProducts: async (productId: string, limit: number = 4): Promise<Product[]> => {
-    const response = await apiRequest<Product[]>(`/products/${productId}/related?limit=${limit}`);
+  // Get single category by ID
+  getCategory: async (id: string): Promise<{ category: Category }> => {
+    const response = await apiRequest<{ category: Category }>(`/categories/${id}`);
     
     if (response.success && response.data) {
       return response.data;
     }
     
-    throw new Error(response.message || 'Failed to fetch related products');
+    throw new Error(response.message || 'Failed to fetch category');
+  },
+
+  // Get category by slug
+  getCategoryBySlug: async (slug: string): Promise<{ category: Category }> => {
+    const response = await apiRequest<{ category: Category }>(`/categories/slug/${slug}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch category');
+  },
+
+  // Search categories
+  searchCategories: async (query: string): Promise<{ categories: Category[]; pagination: any }> => {
+    const searchParams = new URLSearchParams({ q: query });
+
+    const response = await apiRequest<{ categories: Category[]; pagination: any }>(`/categories/search?${searchParams.toString()}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Category search failed');
   },
 };
 
@@ -612,14 +698,86 @@ export const userAPI = {
   },
 };
 
+
+// Media API
+export const mediaAPI = {
+  // Upload file
+  uploadFile: async (file: File, type: string = 'image'): Promise<any> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    // For FormData, we need to handle this differently
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/media/upload`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch {
+        errorMessage = response.statusText || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    return data;
+  },
+
+  // Get media files
+  getMediaFiles: async (params?: PaginationParams): Promise<PaginatedResponse<any>> => {
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await apiRequest<PaginatedResponse<any>>(`/media?${searchParams.toString()}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch media files');
+  },
+
+  // Delete media file
+  deleteMediaFile: async (fileId: string): Promise<void> => {
+    const response = await apiRequest(`/media/${fileId}`, {
+      method: 'DELETE',
+    });
+    
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to delete media file');
+    }
+  },
+};
+
 // Export all APIs
 export const api = {
   auth: authAPI,
   products: productsAPI,
+  categories: categoriesAPI,
   cart: cartAPI,
   orders: ordersAPI,
   reviews: reviewsAPI,
   payment: paymentAPI,
   newsletter: newsletterAPI,
   user: userAPI,
+  media: mediaAPI,
 };

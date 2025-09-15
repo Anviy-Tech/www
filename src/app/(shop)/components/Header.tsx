@@ -4,6 +4,8 @@ import { useCart } from '@/store/cart';
 import { useFavorites } from '@/store/favorites';
 import { useAuth, useAuthUser, useIsAuthenticated } from '@/store/auth';
 import { useState, useRef, useEffect } from 'react';
+import { categoriesAPI } from '@/lib/api';
+import { Category } from '@/types/api';
 
 export default function Header() {
   const items = useCart(s => s.items);
@@ -17,6 +19,8 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Close mobile menu when clicking outside
@@ -50,6 +54,27 @@ export default function Header() {
     }
   }, [isSearchOpen]);
 
+  // Fetch categories for navigation
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const response = await categoriesAPI.getCategories({
+          page: 1,
+          limit: 10 // Limit to main categories for navigation
+        });
+        setCategories(response.categories || []);
+      } catch (error) {
+        console.error('Error fetching categories for navigation:', error);
+        setCategories([]);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   // Handle search submit
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,12 +86,13 @@ export default function Header() {
     }
   };
 
+  // Create dynamic navigation links from categories
   const navigationLinks = [
     { href: '/collections/new', label: 'New Arrivals' },
-    { href: '/shop?tag=ring', label: 'Rings' },
-    { href: '/shop?tag=necklace', label: 'Necklaces' },
-    { href: '/shop?tag=earrings', label: 'Earrings' },
-    { href: '/shop?tag=bracelet', label: 'Bracelets' },
+    ...categories.map(category => ({
+      href: `/shop?tag=${category._id}`,
+      label: category.name
+    })),
     { href: '/shop', label: 'All Jewelry' },
     { href: '/about', label: 'About Us' },
   ];
@@ -111,11 +137,22 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-12">
-              {navigationLinks.slice(0, -2).map((link) => (
-                <Link key={link.href} href={link.href} className="nav-link">
-                  {link.label}
-                </Link>
-              ))}
+              {categoriesLoading ? (
+                // Show loading skeleton for categories
+                <>
+                  <Link href="/collections/new" className="nav-link">New Arrivals</Link>
+                  <div className="h-4 w-16 bg-gray-200 animate-pulse rounded"></div>
+                  <div className="h-4 w-20 bg-gray-200 animate-pulse rounded"></div>
+                  <div className="h-4 w-18 bg-gray-200 animate-pulse rounded"></div>
+                  <Link href="/about" className="nav-link">About Us</Link>
+                </>
+              ) : (
+                navigationLinks.slice(0, -2).map((link) => (
+                  <Link key={link.href} href={link.href} className="nav-link">
+                    {link.label}
+                  </Link>
+                ))
+              )}
               <Link href="/about" className="nav-link">About Us</Link>
             </nav>
 
@@ -328,17 +365,35 @@ export default function Header() {
               {/* Navigation Links */}
               <div className="flex-1 py-6">
                 <nav className="space-y-1">
-                  {navigationLinks.map((link, index) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="block px-6 py-4 text-sm font-medium text-text-secondary hover:text-primary hover:bg-gray-50 transition-all duration-300 animate-slideInLeft"
-                      style={{ animationDelay: `${index * 50}ms` }}
-                      onClick={handleMobileLinkClick}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                  {categoriesLoading ? (
+                    // Show loading skeleton for mobile navigation
+                    <>
+                      <div className="px-6 py-4">
+                        <div className="h-4 w-24 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                      <div className="px-6 py-4">
+                        <div className="h-4 w-20 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                      <div className="px-6 py-4">
+                        <div className="h-4 w-18 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                      <div className="px-6 py-4">
+                        <div className="h-4 w-16 bg-gray-200 animate-pulse rounded"></div>
+                      </div>
+                    </>
+                  ) : (
+                    navigationLinks.map((link, index) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="block px-6 py-4 text-sm font-medium text-text-secondary hover:text-primary hover:bg-gray-50 transition-all duration-300 animate-slideInLeft"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                        onClick={handleMobileLinkClick}
+                      >
+                        {link.label}
+                      </Link>
+                    ))
+                  )}
                 </nav>
 
                 {/* Mobile Quick Actions */}
