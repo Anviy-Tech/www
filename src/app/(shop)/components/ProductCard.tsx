@@ -14,8 +14,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, className = "" }: ProductCardProps) {
-  const add = useCart(s => s.add);
-  const { addItem: addToFavorites, removeItem: removeFromFavorites, isFavorite } = useFavorites();
+  const addItem = useCart(s => s.addItem);
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [imageError, setImageError] = useState(false);
   
@@ -26,20 +26,16 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
     e.stopPropagation();
     setIsAddingToCart(true);
     
+    console.log('🛒 Add to cart clicked for product:', product.name, product);
+    
     try {
-      add({
-        id: product._id,
-        name: product.name,
-        price: product.price,
-        image: getFirstImage(product.images),
-        slug: product._id // Using _id as slug for now
-      }, 1);
+      await addItem(product, 1);
       
       // Success feedback
+      console.log('✅ Successfully added to cart:', product.name);
       // Note: You can integrate with toast system here
-      console.log('Added to cart successfully');
     } catch (error) {
-      console.error('Failed to add to cart:', error);
+      console.error('❌ Failed to add to cart:', error);
       // Error feedback
     } finally {
       // Brief loading state for better UX
@@ -56,15 +52,11 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
     if (isProductFavorite) {
       removeFromFavorites(product._id);
     } else {
-      addToFavorites({
-        id: product._id,
-        name: product.name,
-        price: product.price,
-        image: getFirstImage(product.images),
-        slug: product._id // Using _id as slug for now
-      });
+      addToFavorites(product);
     }
   };
+
+  const imageUrl = getFirstImage(product.images);
 
   return (
     <article className={`group relative bg-white hover:shadow-2xl transition-all duration-500 ease-out hover:-translate-y-1 ${className}`}>
@@ -73,15 +65,30 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
         <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
           {/* Main Product Image */}
           <div className="aspect-square relative">
-            <Image 
-              src={imageError ? PLACEHOLDER_IMAGES.productCard : getFirstImage(product.images)} 
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-all duration-700 group-hover:scale-110"
-              priority={false}
-              onError={() => setImageError(true)}
-            />
+            {imageError || !imageUrl || imageUrl === PLACEHOLDER_IMAGES.productCard ? (
+              // Show elegant fallback for missing images
+              <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                <div className="text-center">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" strokeWidth="1" className="mx-auto mb-2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6m0 6v6"/>
+                    <path d="m21 12-6-3-6 3-6-3"/>
+                  </svg>
+                  <p className="text-xs text-gray-500 font-medium">No Image</p>
+                </div>
+              </div>
+            ) : (
+              <Image 
+                src={imageUrl} 
+                alt={product.name}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover transition-all duration-700 group-hover:scale-110"
+                priority={false}
+                onError={() => setImageError(true)}
+                onLoad={() => setImageError(false)}
+              />
+            )}
             
             {/* Modern Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -119,12 +126,12 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
             </div>
 
             {/* Stock Badge - Modern Design */}
-            {!product.inStock && (
+            {product.stock === 0 && (
               <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-2.5 py-1.5 uppercase tracking-wide shadow-lg">
                 Out of Stock
               </div>
             )}
-            {product.inStock && product.stock < 10 && (
+            {product.stock > 0 && product.stock < 10 && (
               <div className="absolute top-3 left-3 bg-accent text-white text-xs font-semibold px-2.5 py-1.5 uppercase tracking-wide shadow-lg">
                 <span className="hidden sm:inline">Only {product.stock} left</span>
                 <span className="sm:hidden">{product.stock} left</span>
@@ -157,7 +164,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
           {/* Category Tag */}
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-text-muted uppercase tracking-widest">
-              {product.category?.name || 'Jewelry'}
+              {'Jewelry'}
             </span>
             {/* Rating - Compact Mobile */}
             <div className="flex items-center gap-1">
@@ -190,7 +197,7 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
               </span>
               {/* Stock Status for Mobile */}
               <span className="text-xs text-green-600 font-medium sm:hidden">
-                {product.inStock ? (product.stock > 10 ? 'In Stock' : `${product.stock} left`) : 'Out of Stock'}
+                {product.stock > 0 ? (product.stock > 10 ? 'In Stock' : `${product.stock} left`) : 'Out of Stock'}
               </span>
             </div>
             

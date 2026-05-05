@@ -45,12 +45,12 @@ export const RazorpayPaymentButton: React.FC<RazorpayPaymentButtonProps> = ({
         receipt: orderNumber,
         notes: {
           order_type: 'ecommerce',
-          user_id: user.id,
+          user_id: user._id,
         },
         prefill: {
-          name: user.name || '',
+          name: user.fullName || '',
           email: user.email || '',
-          contact: user.phone || '',
+          contact: user.phoneNumber || '',
         },
       };
 

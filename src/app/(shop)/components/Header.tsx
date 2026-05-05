@@ -13,7 +13,7 @@ export default function Header() {
   const { logout } = useAuth();
   const user = useAuthUser();
   const isAuthenticated = useIsAuthenticated();
-  const count = items.reduce((n, i) => n + i.qty, 0);
+  const count = items.reduce((n, i) => n + i.quantity, 0);
   const favoriteCount = favoriteItems.length;
   const [query, setQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -89,10 +89,13 @@ export default function Header() {
   // Create dynamic navigation links from categories
   const navigationLinks = [
     { href: '/collections/new', label: 'New Arrivals' },
-    ...categories.map(category => ({
-      href: `/shop?tag=${category._id}`,
-      label: category.name
-    })),
+    ...categories.map(category => {
+      console.log('Creating navigation link for category:', category.name, 'with ID:', category._id);
+      return {
+        href: `/shop?tag=${category._id}`,
+        label: category.name
+      };
+    }),
     { href: '/shop', label: 'All Jewelry' },
     { href: '/about', label: 'About Us' },
   ];
@@ -112,9 +115,9 @@ export default function Header() {
   
   return (
     <>
-      <header className="nav-minimal sticky top-0 z-50">
-        <div className="container-page py-3 lg:py-6">
-          <div className="flex items-center justify-between">
+      <header className="nav-minimal sticky top-0 z-40" style={{ overflow: 'visible' }}>
+        <div className="container-page py-3 lg:py-6" style={{ overflow: 'visible' }}>
+          <div className="flex items-center justify-between" style={{ overflow: 'visible' }}>
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -157,7 +160,7 @@ export default function Header() {
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-6">
+            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-6" style={{ overflow: 'visible' }}>
               {/* Desktop Search */}
               <div className="hidden md:block">
                 <form onSubmit={handleSearchSubmit} className="relative">
@@ -217,24 +220,40 @@ export default function Header() {
 
               {/* User Menu */}
               {isAuthenticated ? (
-                <div className="relative user-menu-container">
+                <div className="relative user-menu-container" style={{ zIndex: 'auto' }}>
                   <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="nav-link p-2 flex items-center space-x-2"
+                    onClick={() => {
+                      console.log('User menu button clicked, current state:', isUserMenuOpen);
+                      setIsUserMenuOpen(!isUserMenuOpen);
+                    }}
+                    className="nav-link p-2 flex items-center space-x-2 relative hover:bg-gray-50 rounded-sm transition-colors"
+                    aria-expanded={isUserMenuOpen}
+                    aria-haspopup="true"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                       <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    <span className="hidden lg:block text-sm font-medium">{user?.name?.split(' ')[0] || 'User'}</span>
+                    <span className="hidden lg:block text-sm font-medium">{user?.fullName?.split(' ')[0] || 'User'}</span>
+                    <svg 
+                      width="16" 
+                      height="16" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2"
+                      className={`transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                    >
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
                   </button>
 
                   {/* User Dropdown Menu */}
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white shadow-2xl border border-gray-100 rounded-sm z-50 animate-fadeIn">
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white shadow-2xl border border-gray-100 rounded-sm animate-fadeIn" style={{ zIndex: 9999 }}>
                       <div className="py-2">
                         <div className="px-4 py-3 border-b border-gray-100">
-                          <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                          <p className="text-sm font-medium text-gray-900">{user?.fullName || 'User'}</p>
                           <p className="text-xs text-gray-500">{user?.email}</p>
                         </div>
                         <Link
@@ -447,7 +466,7 @@ export default function Header() {
                   {isAuthenticated ? (
                     <div className="space-y-3">
                       <div className="px-3 py-2">
-                        <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                        <p className="text-sm font-medium text-gray-900">{user?.fullName || 'User'}</p>
                         <p className="text-xs text-gray-500">{user?.email}</p>
                       </div>
                       <Link

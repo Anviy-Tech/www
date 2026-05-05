@@ -17,14 +17,18 @@ export default function SimilarProducts({ currentProduct }: SimilarProductsProps
       try {
         setLoading(true);
         
-        // Only fetch if we have a valid category ID
-        if (!currentProduct.category?._id) {
+        // Get category ID - handle both string and object formats
+        const categoryId = typeof currentProduct.category === 'string' 
+          ? currentProduct.category 
+          : null;
+        
+        if (!categoryId) {
           setSimilarProducts([]);
           return;
         }
         
         // Get products from the same category
-        const response = await productsAPI.getProductsByCategory(currentProduct.category._id, {
+        const response = await productsAPI.getProductsByCategory(categoryId, {
           page: 1,
           limit: 8
         });
@@ -41,7 +45,7 @@ export default function SimilarProducts({ currentProduct }: SimilarProductsProps
     };
 
     fetchSimilarProducts();
-  }, [currentProduct._id, currentProduct.category?._id]);
+  }, [currentProduct._id, currentProduct.category]);
 
   if (loading) {
     return (
@@ -98,10 +102,10 @@ export default function SimilarProducts({ currentProduct }: SimilarProductsProps
         </div>
 
         {/* View More */}
-        {currentProduct.category?._id && (
+        {currentProduct.category && (
           <div className="text-center mt-16">
             <a 
-              href={`/shop?tag=${currentProduct.category._id}`}
+              href={`/shop?category=${currentProduct.category}`}
               className="btn-secondary"
             >
               View All Products

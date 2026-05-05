@@ -38,29 +38,46 @@ export function generateMultiplePlaceholders(count: number, width: number, heigh
  * This function handles URLs from localhost:8000 and converts them to use the Next.js proxy
  */
 export function getProxiedImageUrl(imageUrl: string | undefined | null): string {
-  if (!imageUrl) {
+  if (!imageUrl || imageUrl.trim() === '') {
     return PLACEHOLDER_IMAGES.productCard;
   }
 
+  // Clean the URL
+  const cleanUrl = imageUrl.trim();
+
   // If it's already a placeholder or data URL, return as is
-  if (imageUrl.startsWith('data:') || imageUrl.includes('placeholder')) {
-    return imageUrl;
+  if (cleanUrl.startsWith('data:') || cleanUrl.includes('placeholder')) {
+    return cleanUrl;
   }
 
-  // If it's a localhost:8000 URL, convert to proxied path
-  if (imageUrl.includes('localhost:8000') || imageUrl.includes('127.0.0.1:8000')) {
-    // Extract the path after the domain
-    const url = new URL(imageUrl);
-    return url.pathname; // This will be /uploads/... which matches our proxy
-  }
+  try {
+    // If it's a localhost:8000 URL, convert to proxied path
+    if (cleanUrl.includes('localhost:8000') || cleanUrl.includes('127.0.0.1:8000')) {
+      const url = new URL(cleanUrl);
+      return url.pathname; // This will be /uploads/... which matches our proxy
+    }
 
-  // If it's a relative path starting with /uploads, return as is
-  if (imageUrl.startsWith('/uploads/')) {
-    return imageUrl;
-  }
+    // If it's a relative path starting with /uploads, return as is
+    if (cleanUrl.startsWith('/uploads/')) {
+      return cleanUrl;
+    }
 
-  // For other URLs (like external CDNs), return as is
-  return imageUrl;
+    // If it's a full HTTP/HTTPS URL, return as is
+    if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+      return cleanUrl;
+    }
+
+    // If it's a relative path that might be an upload, prepend /uploads/
+    if (!cleanUrl.startsWith('/') && !cleanUrl.includes('://')) {
+      return `/uploads/${cleanUrl}`;
+    }
+
+    // For other cases, return as is
+    return cleanUrl;
+  } catch (error) {
+    console.warn('Failed to process image URL:', cleanUrl, error);
+    return PLACEHOLDER_IMAGES.productCard;
+  }
 }
 
 /**
@@ -71,5 +88,12 @@ export function getFirstImage(images: string[] | undefined | null): string {
     return PLACEHOLDER_IMAGES.productCard;
   }
   
-  return getProxiedImageUrl(images[0]);
+  // Find the first non-empty image URL
+  const firstValidImage = images.find(img => img && img.trim() !== '');
+  
+  if (!firstValidImage) {
+    return PLACEHOLDER_IMAGES.productCard;
+  }
+  
+  return getProxiedImageUrl(firstValidImage);
 }

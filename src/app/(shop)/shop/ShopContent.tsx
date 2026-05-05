@@ -12,7 +12,10 @@ export default function ShopContent() {
   const searchParams = useSearchParams();
   const tag = searchParams.get('tag');
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]); // Keep all products for counting
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryCounts, setCategoryCounts] = useState<{[key: string]: number}>({});
+  const [totalProductCount, setTotalProductCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -24,19 +27,66 @@ export default function ShopContent() {
         setLoading(true);
         setError(null);
         
-        console.log('Fetching products and categories...');
+        console.log('Fetching products and categories for tag:', tag);
         
-        // Fetch products
-        const productsResponse = await productsAPI.getProducts({
-          page: 1,
-          limit: 100, // Get more products for filtering
-          sort: 'createdAt',
-          order: 'desc'
-        });
+        // Fetch products - use category-specific API if tag is provided
+        let productsResponse;
+        if (tag && tag !== 'all') {
+          console.log('Fetching products for specific category:', tag);
+          try {
+            // Use dedicated category-specific API endpoint
+            productsResponse = await productsAPI.getProductsByCategory(tag, {
+              page: 1,
+              limit: 100,
+              sort: 'createdAt',
+              order: 'desc'
+            });
+            console.log('Used getProductsByCategory API endpoint');
+          } catch (categoryError) {
+            console.log('getProductsByCategory failed, falling back to general API with filter:', categoryError);
+            // Fallback to general products API with category filter
+            productsResponse = await productsAPI.getProducts({
+              page: 1,
+              limit: 100,
+              sort: 'createdAt',
+              order: 'desc',
+              category: tag
+            });
+            console.log('Used fallback general products API with category filter');
+          }
+        } else {
+          console.log('Fetching all products');
+          productsResponse = await productsAPI.getProducts({
+            page: 1,
+            limit: 100,
+            sort: 'createdAt',
+            order: 'desc'
+          });
+        }
         
         console.log('Products response:', productsResponse);
         console.log('First product sample:', productsResponse.products?.[0]);
         setProducts(productsResponse.products || []);
+        
+        // Also fetch all products for counting if we're filtering by category
+        if (tag && tag !== 'all') {
+          try {
+            const allProductsResponse = await productsAPI.getProducts({
+              page: 1,
+              limit: 200, // Get all products for counting
+              sort: 'createdAt',
+              order: 'desc'
+            });
+            setAllProducts(allProductsResponse.products || []);
+            console.log('Fetched all products for counting:', allProductsResponse.products?.length);
+          } catch (err) {
+            console.log('Failed to fetch all products for counting, using current products');
+            setAllProducts(productsResponse.products || []);
+          }
+        } else {
+          // If showing all products, use the same array for counting
+          setAllProducts(productsResponse.products || []);
+        }
 
         // Fetch categories
         const categoriesResponse = await categoriesAPI.getCategories({
@@ -46,8 +96,39 @@ export default function ShopContent() {
         
         console.log('Categories response:', categoriesResponse);
         setCategories(categoriesResponse.categories || []);
+
+        // Fetch product counts for each category
+        const counts: {[key: string]: number} = {};
+        const categoryCountPromises = (categoriesResponse.categories || []).map(async (category) => {
+          try {
+            const categoryProductsResponse = await productsAPI.getProducts({
+              category: category._id,
+              limit: 1 // We only need the count, not the actual products
+            });
+            counts[category._id] = categoryProductsResponse.pagination?.total || categoryProductsResponse.products.length;
+            console.log(`Category ${category.name} has ${counts[category._id]} products`);
+          } catch (err) {
+            console.error(`Error fetching count for category ${category.name}:`, err);
+            counts[category._id] = 0;
+          }
+        });
+
+        await Promise.all(categoryCountPromises);
+        setCategoryCounts(counts);
+
+        // Get total product count (for "All" link)
+        try {
+          const allProductsResponse = await productsAPI.getProducts({
+            limit: 1 // We only need the count
+          });
+          setTotalProductCount(allProductsResponse.pagination?.total || allProductsResponse.products.length);
+        } catch (err) {
+          console.error('Error fetching total product count:', err);
+          setTotalProductCount(allProducts.length); // Fallback to current products length
+        }
         
         console.log('Data fetched successfully');
+        console.log('Category counts:', counts);
         console.log('Products with categories:', productsResponse.products?.filter(p => p.category).length);
         console.log('Products without categories:', productsResponse.products?.filter(p => !p.category).length);
       } catch (err) {
@@ -58,40 +139,29 @@ export default function ShopContent() {
         // Set empty arrays on error to prevent crashes
         setProducts([]);
         setCategories([]);
+        setCategoryCounts({});
+        setTotalProductCount(0);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [tag]); // Re-fetch when tag changes
 
-  // Filter products by category if tag is selected
+  // Since we're using API-side filtering, products should already be filtered correctly
   const filtered = React.useMemo(() => {
-    if (!tag || tag === 'all') {
-      console.log('Showing all products:', products.length);
-      return products;
-    }
+    console.log('=== FILTER DEBUG ===');
+    console.log('Current tag:', tag);
+    console.log('Products available:', products.length);
+    console.log('Sample product categories:', products.slice(0, 3).map(p => ({ id: p._id, name: p.name, category: p.category })));
+    console.log('All unique categories in products:', [...new Set(products.map(p => p.category).filter(Boolean))]);
     
-    // Handle both category names (from header nav) and category IDs
-    const filteredProducts = products.filter(p => {
-      // Check if tag matches category ID
-      if (p.category?._id === tag) {
-        return true;
-      }
-      
-      // Check if tag matches category name (case-insensitive)
-      if (p.category?.name && p.category.name.toLowerCase() === tag.toLowerCase()) {
-        return true;
-      }
-      
-      return false;
-    });
-    
-    console.log(`Filtering by category ${tag}:`, filteredProducts.length, 'products found');
-    console.log('Available categories in products:', [...new Set(products.map(p => p.category?._id).filter(Boolean))]);
-    console.log('Available category names in products:', [...new Set(products.map(p => p.category?.name).filter(Boolean))]);
-    return filteredProducts;
+    // Products are already filtered by the API call in useEffect
+    // Just return them directly
+    console.log(`Returning ${products.length} products (API-filtered for tag: ${tag || 'all'})`);
+    console.log('=== END FILTER DEBUG ===');
+    return products;
   }, [products, tag]);
 
   // Get the current category name for display
@@ -113,8 +183,8 @@ export default function ShopContent() {
         name: tag.charAt(0).toUpperCase() + tag.slice(1),
         description: '',
         slug: tag.toLowerCase(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
     }
     
@@ -159,12 +229,10 @@ export default function ShopContent() {
                 : 'border border-border hover:border-primary hover:text-primary'
             }`}
           >
-            All ({products.length})
+            All ({totalProductCount})
           </Link>
           {categories.map(category => {
-            const categoryProductCount = products.filter(p => 
-              p.category?._id === category._id || p.category?.name?.toLowerCase() === category.name.toLowerCase()
-            ).length;
+            const categoryProductCount = categoryCounts[category._id] || 0;
             return (
               <Link 
                 key={category._id} 

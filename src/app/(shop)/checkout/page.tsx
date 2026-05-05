@@ -2,17 +2,26 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/store/cart';
 import { useAuth, useIsAuthenticated } from '@/store/auth';
-import { Address } from '@/types/api';
+import { OrderItem, ShippingAddress } from '@/types/api';
+import { api } from '@/lib/api';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, clear: clearCart } = useCart();
+  const { items, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
   
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGuestCheckout, setIsGuestCheckout] = useState(false);
+  const [guestInfo, setGuestInfo] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+  });
   const [formData, setFormData] = useState({
     shippingAddress: {
       firstName: '',
@@ -41,12 +50,12 @@ export default function CheckoutPage() {
     notes: '',
   });
 
-  // Redirect if not authenticated
+  // Initialize guest checkout if not authenticated
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login?redirect=/checkout');
+    if (!isAuthenticated && !isGuestCheckout) {
+      setIsGuestCheckout(true);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isGuestCheckout]);
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -55,7 +64,7 @@ export default function CheckoutPage() {
     }
   }, [items, router]);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal > 2000 ? 0 : 150;
   const tax = subtotal * 0.18; // 18% GST
   const total = subtotal + shipping + tax;
@@ -78,9 +87,20 @@ export default function CheckoutPage() {
     }));
   };
 
+  const handleGuestInfoChange = (field: string, value: string) => {
+    setGuestInfo(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   const validateStep = (step: number) => {
     switch (step) {
-      case 1: // Shipping Address
+      case 1: // Guest info (if guest checkout) + Shipping Address
+        if (isGuestCheckout) {
+          const guestValid = guestInfo.email && guestInfo.firstName && guestInfo.lastName && guestInfo.phone;
+          if (!guestValid) return false;
+        }
         const shipping = formData.shippingAddress;
         return shipping.firstName && shipping.lastName && shipping.addressLine1 && 
                shipping.city && shipping.state && shipping.postalCode && shipping.phone;
@@ -105,15 +125,49 @@ export default function CheckoutPage() {
     setIsLoading(true);
     
     try {
-      // Here you would integrate with your payment gateway and order API
-      // For now, we'll simulate a successful order
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Prepare order data
+      const orderItems: OrderItem[] = items.map(item => ({
+        product: item.productId,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+      const shippingAddress: ShippingAddress = {
+        fullName: `${formData.shippingAddress.firstName} ${formData.shippingAddress.lastName}`,
+        address: `${formData.shippingAddress.addressLine1}${formData.shippingAddress.addressLine2 ? ', ' + formData.shippingAddress.addressLine2 : ''}`,
+        city: formData.shippingAddress.city,
+        state: formData.shippingAddress.state,
+        zipCode: formData.shippingAddress.postalCode,
+        country: formData.shippingAddress.country,
+        phoneNumber: formData.shippingAddress.phone
+      };
+
+      // Prepare order request
+      const orderRequest = {
+        items: orderItems,
+        shippingAddress,
+        paymentMethod: formData.paymentMethod as 'credit_card' | 'debit_card' | 'upi' | 'net_banking' | 'cod',
+        notes: formData.notes || undefined,
+        ...(isGuestCheckout && {
+          guestInfo: {
+            email: guestInfo.email,
+            firstName: guestInfo.firstName,
+            lastName: guestInfo.lastName,
+            phone: guestInfo.phone,
+          }
+        })
+      };
+
+      // Create order via API (works for both authenticated and guest users)
+      const order = await api.orders.createOrder(orderRequest);
+
       // Clear cart and redirect to success page
-      clearCart();
-      router.push('/checkout/success');
+      await clearCart();
+      router.push(`/checkout/success?order=${order._id}`);
     } catch (error) {
       console.error('Order placement failed:', error);
+      // You might want to show an error toast or modal here
+      alert(error instanceof Error ? error.message : 'Failed to place order. Please try again.');
       setIsLoading(false);
     }
   };
@@ -172,12 +226,72 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Step 1: Shipping Address */}
+            {/* Step 1: Guest Info + Shipping Address */}
             {currentStep === 1 && (
-              <div className="bg-white p-8 shadow-xl border border-gray-100 rounded-sm">
-                <h2 className="text-display text-2xl mb-8">Shipping Address</h2>
+              <div className="bg-white p-8 shadow-xl border border-gray-100 rounded-sm space-y-8">
+                {isGuestCheckout && (
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-display text-2xl">Guest Checkout</h2>
+                      <Link
+                        href="/login?redirect=/checkout"
+                        className="text-sm text-accent hover:text-accent-dark transition-colors"
+                      >
+                        Already have an account? Sign In
+                      </Link>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-gray-200">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input
+                          type="email"
+                          value={guestInfo.email}
+                          onChange={(e) => handleGuestInfoChange('email', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                          placeholder="your@email.com"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                        <input
+                          type="tel"
+                          value={guestInfo.phone}
+                          onChange={(e) => handleGuestInfoChange('phone', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                          placeholder="+91 98765 43210"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                        <input
+                          type="text"
+                          value={guestInfo.firstName}
+                          onChange={(e) => handleGuestInfoChange('firstName', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                        <input
+                          type="text"
+                          value={guestInfo.lastName}
+                          onChange={(e) => handleGuestInfoChange('lastName', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h2 className="text-display text-2xl mb-8">Shipping Address</h2>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
                     <input
@@ -259,16 +373,17 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="mt-8">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.useSameAddress}
-                      onChange={(e) => handleSameAddressChange(e.target.checked)}
-                      className="w-4 h-4 text-accent border-gray-300 rounded focus:ring-accent"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Use same address for billing</span>
-                  </label>
+                  <div className="mt-8">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.useSameAddress}
+                        onChange={(e) => handleSameAddressChange(e.target.checked)}
+                        className="w-4 h-4 text-accent border-gray-300 rounded focus:ring-accent"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Use same address for billing</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             )}
@@ -409,13 +524,31 @@ export default function CheckoutPage() {
               <div className="space-y-4 mb-8">
                 {items.map((item) => (
                   <div key={item.id} className="flex items-center space-x-4">
-                    <div className="w-16 h-16 bg-gray-100 rounded-sm flex-shrink-0"></div>
+                    <div className="w-16 h-16 bg-gray-100 rounded-sm flex-shrink-0 overflow-hidden">
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" strokeWidth="1">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6"/>
+                            <path d="m21 12-6-3-6 3-6-3"/>
+                          </svg>
+                        </div>
+                      )}
+                    </div>
                     <div className="flex-1">
                       <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
-                      <p className="text-xs text-gray-500">Qty: {item.qty}</p>
+                      <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                     </div>
                     <div className="text-sm font-medium text-gray-900">
-                      ₹{(item.price * item.qty).toLocaleString()}
+                      ₹{(item.price * item.quantity).toLocaleString()}
                     </div>
                   </div>
                 ))}

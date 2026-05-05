@@ -5,17 +5,24 @@ import {
   LoginCredentials, 
   RegisterCredentials,
   Product,
+  ProductWithCategory,
   Category,
   Cart,
   CartItem,
   Order,
+  OrderWithDetails,
+  OrderItem,
+  ShippingAddress,
   Review,
   SearchFilters,
   SearchResponse,
   PaymentIntent,
   NewsletterSubscription,
   PaginatedResponse,
-  PaginationParams
+  PaginationParams,
+  Supplier,
+  InventoryItem,
+  Comment
 } from '@/types/api';
 
 // API Configuration
@@ -149,13 +156,38 @@ export const authAPI = {
 
   // Get current user
   getCurrentUser: async (): Promise<User> => {
-    const response = await apiRequest<User>('/auth/me');
+    const response = await apiRequest<User>('/auth/profile');
     
     if (response.success && response.data) {
       return response.data;
     }
     
     throw new Error(response.message || 'Failed to get user');
+  },
+
+  // Update user profile
+  updateProfile: async (profileData: Partial<User>): Promise<User> => {
+    const response = await apiRequest<User>('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to update profile');
+  },
+
+  // Get all users (admin only)
+  getAllUsers: async (): Promise<User[]> => {
+    const response = await apiRequest<User[]>('/auth/users');
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to get users');
   },
 
   // Refresh token
@@ -431,10 +463,9 @@ export const cartAPI = {
 export const ordersAPI = {
   // Create order
   createOrder: async (orderData: {
-    items: Array<{ productId: string; quantity: number; variantId?: string }>;
-    shippingAddress: any;
-    billingAddress: any;
-    paymentMethod: string;
+    items: OrderItem[];
+    shippingAddress: ShippingAddress;
+    paymentMethod: 'credit_card' | 'debit_card' | 'upi' | 'net_banking' | 'cod';
     notes?: string;
   }): Promise<Order> => {
     const response = await apiRequest<Order>('/orders', {
@@ -450,7 +481,7 @@ export const ordersAPI = {
   },
 
   // Get user orders
-  getUserOrders: async (params?: PaginationParams): Promise<PaginatedResponse<Order>> => {
+  getUserOrders: async (params?: PaginationParams): Promise<{ orders: OrderWithDetails[]; pagination: any }> => {
     const searchParams = new URLSearchParams();
     
     if (params) {
@@ -461,7 +492,7 @@ export const ordersAPI = {
       });
     }
 
-    const response = await apiRequest<PaginatedResponse<Order>>(`/orders?${searchParams.toString()}`);
+    const response = await apiRequest<{ orders: OrderWithDetails[]; pagination: any }>(`/orders?${searchParams.toString()}`);
     
     if (response.success && response.data) {
       return response.data;
@@ -471,8 +502,8 @@ export const ordersAPI = {
   },
 
   // Get single order
-  getOrder: async (orderId: string): Promise<Order> => {
-    const response = await apiRequest<Order>(`/orders/${orderId}`);
+  getOrder: async (orderId: string): Promise<OrderWithDetails> => {
+    const response = await apiRequest<OrderWithDetails>(`/orders/${orderId}`);
     
     if (response.success && response.data) {
       return response.data;
@@ -481,10 +512,24 @@ export const ordersAPI = {
     throw new Error(response.message || 'Failed to fetch order');
   },
 
+  // Update order status (admin only)
+  updateOrderStatus: async (orderId: string, status: Order['status']): Promise<Order> => {
+    const response = await apiRequest<Order>(`/orders/${orderId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to update order status');
+  },
+
   // Cancel order
   cancelOrder: async (orderId: string, reason?: string): Promise<Order> => {
     const response = await apiRequest<Order>(`/orders/${orderId}/cancel`, {
-      method: 'POST',
+      method: 'DELETE',
       body: JSON.stringify({ reason }),
     });
     
@@ -493,6 +538,38 @@ export const ordersAPI = {
     }
     
     throw new Error(response.message || 'Failed to cancel order');
+  },
+
+  // Get order statistics (admin only)
+  getOrderStats: async (): Promise<any> => {
+    const response = await apiRequest<any>('/orders/stats');
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch order statistics');
+  },
+
+  // Get all orders (admin only)
+  getAllOrders: async (params?: PaginationParams): Promise<{ orders: OrderWithDetails[]; pagination: any }> => {
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await apiRequest<{ orders: OrderWithDetails[]; pagination: any }>(`/orders/all?${searchParams.toString()}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch all orders');
   },
 };
 
@@ -699,18 +776,91 @@ export const userAPI = {
 };
 
 
-// Media API
+// Suppliers API
+export const suppliersAPI = {
+  // Get all suppliers
+  getSuppliers: async (params?: PaginationParams): Promise<{ suppliers: Supplier[]; pagination: any }> => {
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await apiRequest<{ suppliers: Supplier[]; pagination: any }>(`/suppliers?${searchParams.toString()}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch suppliers');
+  },
+};
+
+// Inventory API
+export const inventoryAPI = {
+  // Get inventory items
+  getInventory: async (params?: PaginationParams): Promise<{ inventory: InventoryItem[]; pagination: any }> => {
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await apiRequest<{ inventory: InventoryItem[]; pagination: any }>(`/inventory?${searchParams.toString()}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch inventory');
+  },
+};
+
+// Comments API
+export const commentsAPI = {
+  // Get comments
+  getComments: async (params?: PaginationParams): Promise<{ comments: Comment[]; pagination: any }> => {
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await apiRequest<{ comments: Comment[]; pagination: any }>(`/comments?${searchParams.toString()}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    throw new Error(response.message || 'Failed to fetch comments');
+  },
+};
+
+// Media API (for image uploads)
 export const mediaAPI = {
-  // Upload file
-  uploadFile: async (file: File, type: string = 'image'): Promise<any> => {
+  // Upload images
+  uploadImages: async (files: File[]): Promise<{ images: string[] }> => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
+    files.forEach((file, index) => {
+      formData.append(`images`, file);
+    });
 
     // For FormData, we need to handle this differently
     const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/media/upload`, {
+    const response = await fetch(`${API_BASE_URL}/upload/images`, {
       method: 'POST',
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -735,36 +885,29 @@ export const mediaAPI = {
     return data;
   },
 
-  // Get media files
-  getMediaFiles: async (params?: PaginationParams): Promise<PaginatedResponse<any>> => {
-    const searchParams = new URLSearchParams();
-    
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, String(value));
-        }
-      });
-    }
-
-    const response = await apiRequest<PaginatedResponse<any>>(`/media?${searchParams.toString()}`);
+  // Get uploaded images
+  getImages: async (): Promise<{ images: string[] }> => {
+    const response = await apiRequest<{ images: string[] }>('/upload/images');
     
     if (response.success && response.data) {
       return response.data;
     }
     
-    throw new Error(response.message || 'Failed to fetch media files');
+    throw new Error(response.message || 'Failed to fetch images');
   },
+};
 
-  // Delete media file
-  deleteMediaFile: async (fileId: string): Promise<void> => {
-    const response = await apiRequest(`/media/${fileId}`, {
-      method: 'DELETE',
-    });
+// Health check API
+export const healthAPI = {
+  // Health check
+  checkHealth: async (): Promise<{ status: string; timestamp: string }> => {
+    const response = await apiRequest<{ status: string; timestamp: string }>('/health');
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to delete media file');
+    if (response.success && response.data) {
+      return response.data;
     }
+    
+    throw new Error(response.message || 'Health check failed');
   },
 };
 
@@ -779,5 +922,9 @@ export const api = {
   payment: paymentAPI,
   newsletter: newsletterAPI,
   user: userAPI,
+  suppliers: suppliersAPI,
+  inventory: inventoryAPI,
+  comments: commentsAPI,
   media: mediaAPI,
+  health: healthAPI,
 };

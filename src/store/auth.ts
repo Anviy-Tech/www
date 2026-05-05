@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User, LoginCredentials, RegisterCredentials } from '@/types/api';
-import { authAPI } from '@/lib/api';
+import { api } from '@/lib/api';
 
 interface AuthState {
   // State
@@ -39,7 +39,7 @@ export const useAuth = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await authAPI.login(credentials);
+          const response = await api.auth.login(credentials);
           
           set({
             user: response.user,
@@ -67,7 +67,7 @@ export const useAuth = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await authAPI.register(credentials);
+          const response = await api.auth.register(credentials);
           
           set({
             user: response.user,
@@ -95,7 +95,7 @@ export const useAuth = create<AuthState>()(
         set({ isLoading: true });
         
         try {
-          await authAPI.logout();
+          await api.auth.logout();
         } catch (error) {
           console.error('Logout error:', error);
         } finally {
@@ -122,7 +122,7 @@ export const useAuth = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const user = await authAPI.getCurrentUser();
+          const user = await api.auth.getCurrentUser();
           
           set({
             user,
@@ -157,7 +157,7 @@ export const useAuth = create<AuthState>()(
         }
 
         try {
-          const response = await authAPI.refreshToken();
+          const response = await api.auth.refreshToken();
           
           set({
             token: response.token,

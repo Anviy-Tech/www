@@ -62,11 +62,13 @@ section {
 .nav-minimal {
   overflow-x: hidden;
   max-width: 100vw;
+  overflow-y: visible; /* Allow dropdown to extend below header */
 }
 
 .nav-minimal .container-page {
   overflow-x: hidden;
   max-width: 100%;
+  overflow-y: visible; /* Allow dropdown to extend below header */
 }
 
 /* Sophisticated Card System */

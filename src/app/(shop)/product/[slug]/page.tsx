@@ -57,17 +57,17 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </div>
 
-            {/* 18K Gold Plating */}
+            {/* Premium Materials */}
             <div className="text-center group">
               <div className="bg-white/60 backdrop-blur-sm border border-[#ADC2C2]/30 rounded-lg p-6 lg:p-8 mb-4 transition-all duration-300 hover:bg-white/80 hover:border-[#916849]/30 hover:shadow-lg">
                 <div className="w-16 h-16 bg-[#E7C3A8] rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <svg className="w-8 h-8 text-[#916849]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3l14 9-14 9V3z"/>
                   </svg>
                 </div>
-                <h3 className="text-[#916849] font-medium text-sm lg:text-base mb-2">18K Gold Plating</h3>
+                <h3 className="text-[#916849] font-medium text-sm lg:text-base mb-2">Premium Materials</h3>
                 <p className="text-[#8DA7A8] text-xs lg:text-sm leading-relaxed">
-                  Premium gold plating for lasting brilliance
+                  Carefully selected high-quality materials
                 </p>
               </div>
             </div>
@@ -114,42 +114,138 @@ export default async function ProductPage({ params }: Props) {
               <h2 className="text-display text-3xl mb-8 text-[#916849]">Specifications</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4">
-                  <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
-                    <span className="text-[#8DA7A8]">Material</span>
-                    <span className="font-medium text-[#916849]">18K Gold Plated</span>
-                  </div>
-                  <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
-                    <span className="text-[#8DA7A8]">Base Metal</span>
-                    <span className="font-medium text-[#916849]">316L Stainless Steel</span>
-                  </div>
-                  <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
-                    <span className="text-[#8DA7A8]">Stone</span>
-                    <span className="font-medium text-[#916849]">Premium Zirconia</span>
-                  </div>
+                  {/* Dynamic specifications based on product data */}
                   <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
                     <span className="text-[#8DA7A8]">Category</span>
-                    <span className="font-medium text-[#916849] capitalize">Jewelry</span>
+                    <span className="font-medium text-[#916849] capitalize">
+                      {'Jewelry'}
+                    </span>
                   </div>
+                  
+                  {product.jewelryAttributes?.metalType && (
+                    <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                      <span className="text-[#8DA7A8]">Metal Type</span>
+                      <span className="font-medium text-[#916849]">{product.jewelryAttributes.metalType}</span>
+                    </div>
+                  )}
+                  
+                  {product.jewelryAttributes?.gemstoneDetails?.type && (
+                    <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                      <span className="text-[#8DA7A8]">Gemstone</span>
+                      <span className="font-medium text-[#916849]">{product.jewelryAttributes.gemstoneDetails.type}</span>
+                    </div>
+                  )}
+                  
+                  {product.jewelryAttributes?.gemstoneDetails?.caratWeight && (
+                    <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                      <span className="text-[#8DA7A8]">Carat Weight</span>
+                      <span className="font-medium text-[#916849]">{product.jewelryAttributes.gemstoneDetails.caratWeight} ct</span>
+                    </div>
+                  )}
+                  
+                  {product.jewelryAttributes?.gemstoneDetails?.clarity && (
+                    <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                      <span className="text-[#8DA7A8]">Clarity</span>
+                      <span className="font-medium text-[#916849]">{product.jewelryAttributes.gemstoneDetails.clarity}</span>
+                    </div>
+                  )}
+                  
+                  {product.jewelryAttributes?.gemstoneDetails?.cut && (
+                    <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                      <span className="text-[#8DA7A8]">Cut</span>
+                      <span className="font-medium text-[#916849]">{product.jewelryAttributes.gemstoneDetails.cut}</span>
+                    </div>
+                  )}
                 </div>
+                
                 <div className="space-y-4">
-                  <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
-                    <span className="text-[#8DA7A8]">Weight</span>
-                    <span className="font-medium text-[#916849]">2.3g</span>
-                  </div>
-                  <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
-                    <span className="text-[#8DA7A8]">Dimensions</span>
-                    <span className="font-medium text-[#916849]">15mm x 12mm</span>
-                  </div>
-                  <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
-                    <span className="text-[#8DA7A8]">Warranty</span>
-                    <span className="font-medium text-[#916849]">1 Year</span>
-                  </div>
+                  {product.inventory?.weight && (
+                    <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                      <span className="text-[#8DA7A8]">Weight</span>
+                      <span className="font-medium text-[#916849]">{product.inventory.weight}g</span>
+                    </div>
+                  )}
+                  
+                  {product.jewelryAttributes?.dimensions && (
+                    <>
+                      {product.jewelryAttributes.dimensions.width && product.jewelryAttributes.dimensions.height && (
+                        <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                          <span className="text-[#8DA7A8]">Dimensions</span>
+                          <span className="font-medium text-[#916849]">
+                            {product.jewelryAttributes.dimensions.width}mm x {product.jewelryAttributes.dimensions.height}mm
+                          </span>
+                        </div>
+                      )}
+                      
+                      {product.jewelryAttributes.dimensions.ringSize && (
+                        <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                          <span className="text-[#8DA7A8]">Ring Size</span>
+                          <span className="font-medium text-[#916849]">{product.jewelryAttributes.dimensions.ringSize}</span>
+                        </div>
+                      )}
+                      
+                      {product.jewelryAttributes.dimensions.chainLength && (
+                        <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                          <span className="text-[#8DA7A8]">Chain Length</span>
+                          <span className="font-medium text-[#916849]">{product.jewelryAttributes.dimensions.chainLength}"</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  
+                  {product.inventory?.sku && (
+                    <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                      <span className="text-[#8DA7A8]">SKU</span>
+                      <span className="font-medium text-[#916849]">{product.inventory.sku}</span>
+                    </div>
+                  )}
+                  
                   <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
                     <span className="text-[#8DA7A8]">Stock</span>
                     <span className="font-medium text-[#916849]">{product.stock} pieces</span>
                   </div>
+                  
+                  <div className="flex justify-between py-3 border-b border-[#ADC2C2]/30">
+                    <span className="text-[#8DA7A8]">Warranty</span>
+                    <span className="font-medium text-[#916849]">1 Year</span>
+                  </div>
                 </div>
               </div>
+              
+              {/* Certification Information */}
+              {product.jewelryAttributes?.certification && (
+                <div className="mt-8 p-6 bg-green-50 rounded-lg">
+                  <h3 className="text-xl font-medium text-[#916849] mb-4">Certification Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {product.jewelryAttributes.certification.certificateNumber && (
+                      <div className="flex justify-between py-2 border-b border-green-200">
+                        <span className="text-[#8DA7A8]">Certificate Number</span>
+                        <span className="font-medium text-[#916849]">{product.jewelryAttributes.certification.certificateNumber}</span>
+                      </div>
+                    )}
+                    {product.jewelryAttributes.certification.issuingAuthority && (
+                      <div className="flex justify-between py-2 border-b border-green-200">
+                        <span className="text-[#8DA7A8]">Issuing Authority</span>
+                        <span className="font-medium text-[#916849]">{product.jewelryAttributes.certification.issuingAuthority}</span>
+                      </div>
+                    )}
+                    {product.jewelryAttributes.certification.grade && (
+                      <div className="flex justify-between py-2 border-b border-green-200">
+                        <span className="text-[#8DA7A8]">Grade</span>
+                        <span className="font-medium text-[#916849]">{product.jewelryAttributes.certification.grade}</span>
+                      </div>
+                    )}
+                    {product.jewelryAttributes.certification.issueDate && (
+                      <div className="flex justify-between py-2 border-b border-green-200">
+                        <span className="text-[#8DA7A8]">Issue Date</span>
+                        <span className="font-medium text-[#916849]">
+                          {new Date(product.jewelryAttributes.certification.issueDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Care Instructions */}
@@ -185,7 +281,7 @@ export default async function ProductPage({ params }: Props) {
       </section>
 
       {/* Reviews Section */}
-      <ProductReviews />
+      <ProductReviews productId={product._id} />
 
       {/* Similar Products */}
       <SimilarProducts currentProduct={product} />

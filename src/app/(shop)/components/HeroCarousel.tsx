@@ -2,9 +2,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { Product } from '@/types/api';
+import { getFirstImage, getProxiedImageUrl } from '@/lib/imageUtils';
 
 interface HeroSlide {
-  id: number;
+  id: string;
   title: string;
   subtitle: string;
   description: string;
@@ -12,11 +14,41 @@ interface HeroSlide {
   buttonLink: string;
   image: string;
   theme: 'light' | 'dark' | 'neutral';
+  price?: number;
+  originalPrice?: number;
+  productSlug?: string;
 }
 
-const heroSlides: HeroSlide[] = [
+interface HeroCarouselProps {
+  products?: Product[];
+  loading?: boolean;
+}
+
+// Helper function to create hero slides from products
+const createSlidesFromProducts = (products: Product[]): HeroSlide[] => {
+  const titles = [
+    { title: "Timeless Elegance", subtitle: "Crafted with Purpose", description: "Discover jewelry that transcends trends, where every piece tells a story of craftsmanship and beauty.", theme: "neutral" as const },
+    { title: "Artisan Heritage", subtitle: "Handcrafted Excellence", description: "Each piece is thoughtfully designed and meticulously crafted by skilled artisans who understand the language of beauty.", theme: "light" as const },
+    { title: "Modern Sophistication", subtitle: "Contemporary Design", description: "Where tradition meets innovation, creating jewelry that speaks to the modern connoisseur.", theme: "dark" as const },
+    { title: "Personal Expression", subtitle: "Your Unique Style", description: "Find pieces that resonate with your individuality and celebrate your personal journey.", theme: "neutral" as const }
+  ];
+
+  return products.slice(0, 4).map((product, index) => ({
+    id: product._id,
+    ...titles[index],
+    buttonText: "Shop Now",
+    buttonLink: `/product/${product._id}`, // Use product._id as the slug
+    image: getFirstImage(product.images) || "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=2400&h=3200&fit=crop&q=95&auto=format&dpr=2",
+    price: product.price,
+    originalPrice: product.price * 1.2, // Assuming 20% discount
+    productSlug: product._id // Use product._id as the slug
+  }));
+};
+
+// Fallback slides when no products are available
+const fallbackSlides: HeroSlide[] = [
   {
-    id: 1,
+    id: "fallback-1",
     title: "Timeless Elegance",
     subtitle: "Crafted with Purpose",
     description: "Discover jewelry that transcends trends, where every piece tells a story of craftsmanship and beauty.",
@@ -26,7 +58,7 @@ const heroSlides: HeroSlide[] = [
     theme: "neutral"
   },
   {
-    id: 2,
+    id: "fallback-2",
     title: "Artisan Heritage",
     subtitle: "Handcrafted Excellence",
     description: "Each piece is thoughtfully designed and meticulously crafted by skilled artisans who understand the language of beauty.",
@@ -36,7 +68,7 @@ const heroSlides: HeroSlide[] = [
     theme: "light"
   },
   {
-    id: 3,
+    id: "fallback-3",
     title: "Modern Sophistication",
     subtitle: "Contemporary Design",
     description: "Where tradition meets innovation, creating jewelry that speaks to the modern connoisseur.",
@@ -44,20 +76,10 @@ const heroSlides: HeroSlide[] = [
     buttonLink: "/collections/new",
     image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=2400&h=3200&fit=crop&q=95&auto=format&dpr=2",
     theme: "dark"
-  },
-  {
-    id: 4,
-    title: "Personal Expression",
-    subtitle: "Your Unique Style",
-    description: "Find pieces that resonate with your individuality and celebrate your personal journey.",
-    buttonText: "Find Your Style",
-    buttonLink: "/shop",
-    image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=2400&h=3200&fit=crop&q=95&auto=format&dpr=2",
-    theme: "neutral"
   }
 ];
 
-export default function HeroCarousel() {
+export default function HeroCarousel({ products = [], loading = false }: HeroCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [touchStart, setTouchStart] = useState(0);
@@ -65,18 +87,21 @@ export default function HeroCarousel() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Create dynamic slides from products or use fallback
+  const heroSlides = products?.length > 0 ? createSlidesFromProducts(products) : fallbackSlides;
+
   useEffect(() => {
-    if (!isAutoPlaying || isPaused) return;
+    if (!isAutoPlaying || isPaused || !heroSlides.length) return;
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying, isPaused]);
+  }, [isAutoPlaying, isPaused, heroSlides.length]);
 
   const goToSlide = (index: number) => {
-    if (isTransitioning || index === currentSlide) return;
+    if (isTransitioning || index === currentSlide || !heroSlides.length || index >= heroSlides.length) return;
     
     setIsTransitioning(true);
     setCurrentSlide(index);
@@ -89,7 +114,7 @@ export default function HeroCarousel() {
   };
 
   const nextSlide = () => {
-    if (isTransitioning) return;
+    if (isTransitioning || !heroSlides.length) return;
     
     setIsTransitioning(true);
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
@@ -102,7 +127,7 @@ export default function HeroCarousel() {
   };
 
   const prevSlide = () => {
-    if (isTransitioning) return;
+    if (isTransitioning || !heroSlides.length) return;
     
     setIsTransitioning(true);
     setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
@@ -137,7 +162,48 @@ export default function HeroCarousel() {
     }
   };
 
-  const currentSlideData = heroSlides[currentSlide];
+  const currentSlideData = heroSlides[currentSlide] || heroSlides[0] || fallbackSlides[0];
+
+  // Early return if no slides available
+  if (!heroSlides || heroSlides.length === 0) {
+    return (
+      <section className="relative h-[100vh] sm:h-[100svh] overflow-hidden bg-[#E0D6D6] will-change-transform">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
+          <div className="relative z-20 h-full flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-gray-800 mb-4">Welcome to ANVIY</h1>
+              <p className="text-gray-600 mb-8">Discover our beautiful jewelry collection</p>
+              <Link href="/shop" className="btn-primary">
+                Shop Now
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <section className="relative h-[100vh] sm:h-[100svh] overflow-hidden bg-[#E0D6D6] will-change-transform">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse">
+          <div className="relative z-20 h-full flex items-center">
+            <div className="container-page w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center min-h-[80vh] lg:min-h-0">
+                <div className="lg:col-span-8 xl:col-span-7 text-center lg:text-left space-y-8">
+                  <div className="h-6 bg-gray-300 rounded w-48 mx-auto lg:mx-0"></div>
+                  <div className="h-16 bg-gray-300 rounded w-full"></div>
+                  <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto lg:mx-0"></div>
+                  <div className="h-12 bg-gray-300 rounded w-40 mx-auto lg:mx-0"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 
@@ -170,7 +236,7 @@ export default function HeroCarousel() {
             {/* Background Image */}
             <div className="absolute inset-0">
               <Image
-                src={slide.image}
+                src={getProxiedImageUrl(slide.image)}
                 alt={`${slide.title} ${slide.subtitle}`}
                 fill
                 className={`object-cover transition-transform duration-1000 ease-out ${
@@ -321,7 +387,7 @@ export default function HeroCarousel() {
                         
                         <div className="relative aspect-[4/5] mb-8 overflow-hidden rounded-lg group/image">
                           <Image
-                            src={slide.image}
+                            src={getProxiedImageUrl(slide.image)}
                             alt="Featured jewelry"
                             fill
                             className="object-cover transition-transform duration-1000 ease-out group-hover/image:scale-105"
@@ -342,21 +408,39 @@ export default function HeroCarousel() {
                         </div>
                         
                         <div className="text-white">
-                          <h3 className="text-display text-lg xl:text-xl mb-3 font-medium">Signature Collection</h3>
+                          <h3 className="text-display text-lg xl:text-xl mb-3 font-medium">
+                            {products.length > 0 ? products[currentSlide]?.name || "Signature Collection" : "Signature Collection"}
+                          </h3>
                           
-                          {/* Enhanced Price */}
+                          {/* Enhanced Price - Dynamic from current slide */}
                           <div className="mb-6 flex items-center gap-3">
-                            <span className="text-2xl font-medium text-[#E7C3A8]">₹3,200</span>
-                            <span className="text-sm line-through text-white/50">₹3,800</span>
-                            <span className="bg-[#E7C3A8] text-[#916849] text-xs px-2 py-1 rounded-full font-medium">Save 16%</span>
+                            {currentSlideData?.price ? (
+                              <>
+                                <span className="text-2xl font-medium text-[#E7C3A8]">₹{currentSlideData.price.toLocaleString()}</span>
+                                {currentSlideData.originalPrice && (
+                                  <>
+                                    <span className="text-sm line-through text-white/50">₹{currentSlideData.originalPrice.toLocaleString()}</span>
+                                    <span className="bg-[#E7C3A8] text-[#916849] text-xs px-2 py-1 rounded-full font-medium">
+                                      Save {Math.round(((currentSlideData.originalPrice - currentSlideData.price) / currentSlideData.originalPrice) * 100)}%
+                                    </span>
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <span className="text-2xl font-medium text-[#E7C3A8]">₹3,200</span>
+                                <span className="text-sm line-through text-white/50">₹3,800</span>
+                                <span className="bg-[#E7C3A8] text-[#916849] text-xs px-2 py-1 rounded-full font-medium">Save 16%</span>
+                              </>
+                            )}
                           </div>
                           
                           {/* Enhanced CTA Button */}
                           <Link 
-                            href="/shop" 
+                            href={currentSlideData?.buttonLink || '/shop'} 
                             className="group/link inline-flex items-center justify-center w-full py-3 px-4 font-medium text-sm tracking-wide transition-all duration-500 rounded-lg bg-white text-[#916849] hover:bg-[#E7C3A8] hover:text-white shadow-lg hover:shadow-xl"
                           >
-                            <span>Discover Now</span>
+                            <span>{currentSlideData?.buttonText || 'Shop Now'}</span>
                             <svg className="ml-2 w-4 h-4 transition-transform duration-500 ease-out group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                             </svg>

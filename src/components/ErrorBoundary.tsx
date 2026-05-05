@@ -27,11 +27,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({ error, errorInfo });
     
-    // Log to external service in production
-    if (process.env.NODE_ENV === 'production') {
-      // TODO: Send to error reporting service (Sentry, LogRocket, etc.)
-      console.error('Production error:', { error, errorInfo });
-    }
+    // Import error handler dynamically to avoid circular dependencies
+    import('@/lib/errorHandler').then(({ handleGlobalError }) => {
+      handleGlobalError(error, errorInfo);
+    });
   }
 
   resetError = () => {

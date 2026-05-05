@@ -48,9 +48,9 @@ export const UserProfile: React.FC = () => {
   });
   
   const [profileForm, setProfileForm] = useState<ProfileFormData>({
-    name: user?.name || '',
-    phone: user?.phone || '',
-    avatar: user?.avatar || '',
+    name: user?.fullName || '',
+    phone: user?.phoneNumber || '',
+    avatar: '', // Avatar not available in User interface
   });
 
   useEffect(() => {
